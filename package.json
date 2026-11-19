@@ -25,8 +25,9 @@
     "dist:win": "npm run build && electron-builder --win",
     "dist:mac": "npm run build && electron-builder --mac",
     "dist:linux": "npm run build && electron-builder --linux",
-    "web": "npm run build && node out/server/server.js",
-    "mcp": "npm run build && node out/mcp/stdio.js"
+    "web": "npm --prefix web run dev",
+    "mcp": "npm run build && node out/mcp/stdio.js",
+    "web:build": "npm --prefix web run build"
   },
   "keywords": [
     "seo",
@@ -79,14 +80,12 @@
     "files": [
       "out/**",
       "!out/tools/**",
-      "!out/server/**",
       "!out/**/*.map",
       "renderer/index.html",
       "renderer/styles.css",
       "renderer/assets/**",
       "renderer/dist/**",
       "!renderer/dist/web-bridge.js",
-      "!renderer/dist/site.js",
       "!renderer/dist/**/*.map",
       "package.json"
     ],
