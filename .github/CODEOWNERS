@@ -1,0 +1,7 @@
+# Default owner for everything in the repository.
+*                         @Zubair-hussain
+
+# Security-sensitive areas: SSRF guard, interaction tests, release pipeline.
+/src/engine/public-guard.ts  @Zubair-hussain
+/src/electron/audits/memory.ts  @Zubair-hussain
+/.github/workflows/       @Zubair-hussain
