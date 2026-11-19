@@ -17,7 +17,7 @@ A free, open-source **website audit tool** that runs an SEO audit, Lighthouse-st
 
 [Download](#-download) · [Features](#-what-sightline-checks) · [Architecture](#-system-architecture) · [MCP](#-ai-apps-mcp-server) · [CLI](#-command-line-interface) · [Discussions](https://github.com/Zubair-hussain/Sightline/discussions)
 
-<img src="website/assets/app-report.png" alt="Sightline website audit report showing an overall score and scores for each audit category" width="860">
+<img src="web/public/assets/app-report.png" alt="Sightline website audit report showing an overall score and scores for each audit category" width="860">
 
 </div>
 
@@ -113,7 +113,7 @@ git clone https://github.com/Zubair-hussain/Sightline.git
 cd Sightline
 npm install
 npm start          # desktop app
-npm run web        # website + web app on http://localhost:8080
+npm run web        # website + web app (Next.js) on http://localhost:3000
 ```
 
 **Command line**
@@ -174,7 +174,7 @@ flowchart TB
     end
 
     D -- IPC --> O
-    W -- "HTTP + NDJSON stream" --> SV["Web server<br/>src/server"] --> O
+    W -- "HTTP + NDJSON stream" --> SV["Website &amp; API<br/>web/ (Next.js)"] --> O
     C --> O
     M -- "stdio JSON-RPC" --> MCP["MCP server<br/>src/mcp"] --> O
     O --> Shared
@@ -375,12 +375,18 @@ sightline <url> [options]
 
 ## 🌐 Web version and HTTP API
 
-`npm run web` serves:
+The website is a **Next.js (App Router)** app in `web/`. The landing page is pre-rendered to static HTML with full SEO metadata, Open Graph cards and `SoftwareApplication` + `FAQPage` structured data. The API routes call the shared audit engine directly, and `/app` serves the same UI as the desktop app, wired to the API through a web bridge.
+
+```bash
+npm run web          # dev server on http://localhost:3000
+npm run web:build    # production build
+```
 
 | Route | Purpose |
 |---|---|
 | `GET /` | Landing page with OS-aware download buttons |
 | `GET /app` | The Sightline UI in the browser |
+| `GET /robots.txt` · `/sitemap.xml` · `/llms.txt` | Search-engine and AI-assistant discovery |
 | `POST /api/audit` | `{ "url": "...", "modules": [...] }` → NDJSON stream of `progress` events, then `report` |
 | `POST /api/report-html` | `{ report, theme, target }` → standalone HTML report |
 | `POST /api/testcases` | `{ report, cases, format }` → CSV, Markdown or Playwright file |
@@ -397,7 +403,7 @@ sightline <url> [options]
 | **Browser tests touching accounts** | In-memory session per test, no cookies, permissions denied, downloads and pop-ups blocked |
 | **Abuse of the public server** | Per-IP hourly rate limit and a concurrency cap |
 | **Secrets** | The Cloudflare token is stored encrypted with the OS keychain (`safeStorage`) and never written in plain text |
-| **Path traversal** | Static files are resolved inside their folder; source folders are never served |
+| **Clickjacking and sniffing** | The website sends `X-Frame-Options: DENY`, HSTS, `nosniff`, a strict referrer policy and hides `X-Powered-By` |
 
 Desktop audits run entirely on your computer. The web version fetches the audited page from the server and does not store reports — history stays in your browser. Report vulnerabilities privately via [SECURITY.md](SECURITY.md).
 
@@ -409,20 +415,24 @@ Desktop audits run entirely on your computer. The web version fetches the audite
 
 | Option | How |
 |---|---|
-| Docker | `docker run -p 8080:8080 ghcr.io/zubair-hussain/sightline:latest` (image built by the **Website Docker image** workflow) |
+| **Vercel** (recommended) | Import the repo, set **Root Directory** to `web`, keep "Include files outside the root directory" on, and set `NEXT_PUBLIC_SITE_URL`. Audits run as Node.js functions (60 s limit) |
+| Docker | `docker run -p 8080:8080 ghcr.io/zubair-hussain/sightline:latest` (Next.js standalone image built by the **Website Docker image** workflow) |
 | Render | One-click via `render.yaml`; add a `RENDER_DEPLOY_HOOK` secret to redeploy on every push |
 | Any VPS / Fly.io / Railway | Use the `Dockerfile`, expose port 8080, set `SIGHTLINE_TRUST_PROXY=1` behind a proxy |
+
+> On serverless hosts each instance keeps its own rate-limit window. For strict limits under heavy traffic, put the site behind a CDN rule or a shared store.
 
 ## 🧩 Configuration reference
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `PORT` | `8080` | Web server port |
-| `SIGHTLINE_RELEASES_URL` | — | Where download buttons point, e.g. `https://github.com/<you>/Sightline/releases/latest/download` |
-| `SIGHTLINE_DOWNLOAD_DIR` | `./dist` | Serve installers from a local folder instead |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Public URL of the website (canonical links, sitemap, social cards) — set at build time |
+| `PORT` | `3000` (Docker: `8080`) | Web server port |
+| `SIGHTLINE_RELEASES_URL` | this repo's latest release | Where download buttons point |
 | `SIGHTLINE_RATE_PER_HOUR` | `20` | Web audits per IP per hour |
-| `SIGHTLINE_MAX_CONCURRENT` | `3` | Simultaneous web audits |
-| `SIGHTLINE_TRUST_PROXY` | — | Use `X-Forwarded-For` for client IPs behind a proxy |
+| `SIGHTLINE_MAX_CONCURRENT` | `3` | Simultaneous web audits per instance |
+| `SIGHTLINE_MAX_PAGES` · `SIGHTLINE_MAX_LINKS` | `6` · `60` | Crawl and link-check limits on the website |
+| `SIGHTLINE_TRUST_PROXY` | auto on Vercel | Use `X-Forwarded-For` for client IPs behind a proxy |
 | `CLOUDFLARE_API_TOKEN` | — | CLI/MCP: read-only token for zone-settings review |
 
 Desktop settings (language, appearance, report style, crawl and link limits, Lighthouse device, iPhone/iPad, memory steps, allowed sites, Cloudflare token) are in the app's **Settings**.
@@ -442,19 +452,24 @@ src/
     lighthouse-score.ts  Lighthouse scoring curves and Speed Index
     testcases.ts     Launch-day test plan and exports
     report-html.ts   PDF/HTML report
+    public-guard.ts  SSRF protection and rate limiting for public servers
   electron/          Desktop app, sandboxed probe, browser audits
-  server/            Website, web app and HTTP API
+  tools/             Icon generator
   mcp/               MCP server
   cli/               Command-line interface
 renderer/            UI (HTML, CSS, TypeScript)
-website/             Landing page
+web/                 Website, browser app and HTTP API (Next.js App Router)
+  app/               Landing page, layout/metadata, robots, sitemap, API and download routes
+  components/        Client components: hero form, OS-aware downloads, MCP snippet
+  lib/               Page content and server helpers (guard, rate limit, limits)
+  scripts/           Copies the shared UI into public/app at build time
 types/               Shared types
 .github/workflows/   CI, CodeQL, Docker, releases
 ```
 
 ## 🧰 Tech stack
 
-TypeScript (strict) · Electron · Chrome DevTools Protocol · Node.js · cheerio · axe-core · Model Context Protocol · Docker · GitHub Actions. No front-end framework: the UI is plain TypeScript with an Apple-inspired design system, light and dark modes, and 14 languages (English, Español, Français, Deutsch, Português, Italiano, Русский, Türkçe, العربية, اردو, हिन्दी, 简体中文, 日本語, 한국어).
+TypeScript (strict) · Electron · Next.js 15 (App Router) + React 19 for the website · Chrome DevTools Protocol · Node.js · cheerio · axe-core · Model Context Protocol · Docker · GitHub Actions. The app UI itself uses no framework: it is plain TypeScript with an Apple-inspired design system, light and dark modes, and 14 languages (English, Español, Français, Deutsch, Português, Italiano, Русский, Türkçe, العربية, اردو, हिन्दी, 简体中文, 日本語, 한국어).
 
 ## ⚖️ How Sightline compares
 

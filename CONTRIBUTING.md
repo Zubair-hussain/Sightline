@@ -9,7 +9,7 @@ git clone https://github.com/Zubair-hussain/Sightline.git
 cd Sightline
 npm install
 npm start          # desktop app
-npm run web        # website + web app on http://localhost:8080
+npm run web        # website + web app (Next.js) on http://localhost:3000
 npm run typecheck
 ```
 
@@ -17,9 +17,9 @@ npm run typecheck
 
 | Folder | What lives there |
 |---|---|
-| `src/engine/` | Audit modules shared by the app, CLI, web server and MCP (SEO, hreflang, links, website, Cloudflare, brand, test cases, Lighthouse scoring) |
+| `src/engine/` | Audit modules shared by the app, CLI, website and MCP (SEO, hreflang, links, website, Cloudflare, brand, test cases, Lighthouse scoring) |
 | `src/electron/` | Desktop app + browser-driven audits (performance, Lighthouse, coverage, iPhone, memory) |
-| `src/server/` | Website, web app and audit API |
+| `web/` | Website, browser app and audit API (Next.js) |
 | `src/mcp/` | MCP server for AI apps |
 | `renderer/` | The UI (HTML/CSS + `renderer/src/*.ts`) |
 | `types/` | Shared types |
