@@ -35,6 +35,23 @@ npm run typecheck
 
 UI strings live in `renderer/src/i18n.ts` and `renderer/src/i18n-more.ts`. Native speakers improving a language are very welcome.
 
+## How changes land on `main`
+
+`main` is protected by a repository ruleset:
+
+- **No direct pushes, force pushes or branch deletion** — every change goes through a pull request.
+- **Required checks:** build & test on Ubuntu, Windows and macOS, the Next.js website job and CodeQL must pass, on a branch that is up to date with `main`.
+- **All review conversations must be resolved** before merging.
+- **Linear history:** pull requests are merged with *squash* or *rebase* (no merge commits); the branch is deleted automatically afterwards.
+- **Release tags** (`v*`) cannot be moved or deleted once published.
+
+```bash
+git switch -c fix/short-description
+# …make changes…
+git push -u origin fix/short-description
+gh pr create --fill
+```
+
 ## Pull requests
 
 - One topic per PR, with a clear description and screenshots for UI changes.
