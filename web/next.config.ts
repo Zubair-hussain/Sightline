@@ -19,6 +19,12 @@ const config: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, '..'),
   // Loaded by Node at runtime from web/node_modules (not bundled), so engine files outside this folder can use it.
   serverExternalPackages: ['cheerio'],
+  webpack(cfg) {
+    // Engine files in ../src/engine resolve packages normally first, then fall back to web/node_modules
+    // (a fresh checkout has no node_modules next to src/).
+    cfg.resolve.modules = ['node_modules', path.join(__dirname, 'node_modules')];
+    return cfg;
+  },
   async rewrites() {
     return [{ source: '/app', destination: '/app/index.html' }];
   },

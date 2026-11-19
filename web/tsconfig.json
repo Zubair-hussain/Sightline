@@ -16,7 +16,8 @@
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./*"],
-      "@engine/*": ["../src/engine/*"]
+      "@engine/*": ["../src/engine/*"],
+      "cheerio": ["./node_modules/cheerio"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../types/**/*.d.ts", "../src/engine/**/*.ts"],
