@@ -1,0 +1,53 @@
+declare namespace SL {
+  interface Settings {
+    language: string;
+    theme: 'system' | 'light' | 'dark';
+    maxPages: number;
+    maxLinks: number;
+    memoryIterations: number;
+    device: 'iphone' | 'ipad';
+    modules: CategoryKey[];
+    cloudflareToken: string;
+    /** 'brand' styles exported reports like the audited site; 'sightline' uses the house style */
+    reportTheme: 'brand' | 'sightline';
+    lighthouseFormFactor: 'mobile' | 'desktop';
+    memoryScenario: MemoryScenario;
+    /** sites the user confirmed they may test with the memory/interaction test */
+    memoryConsent: string[];
+  }
+
+  interface HistoryItem { id: string; url: string; score: number | null; startedAt: string }
+
+  interface Bridge {
+    startAudit(opts: Partial<AuditOptions> & { url: string }): Promise<{ ok: true; report: Report } | { ok: false; error: string }>;
+    cancelAudit(): Promise<void>;
+    onProgress(cb: (p: Progress) => void): () => void;
+    exportReport(report: Report, format: 'json' | 'pdf' | 'html'): Promise<string | null>;
+    exportTestCases(report: Report, cases: TestCase[], format: TestCaseFormat): Promise<string | null>;
+    getSettings(): Promise<Settings>;
+    setSettings(s: Partial<Settings>): Promise<Settings>;
+    listHistory(): Promise<HistoryItem[]>;
+    loadHistory(id: string): Promise<Report | null>;
+    deleteHistory(id: string): Promise<void>;
+    openExternal(url: string): Promise<void>;
+    info(): Promise<AppInfo>;
+  }
+
+  type TestCaseFormat = 'csv' | 'md' | 'playwright';
+
+  interface AppInfo {
+    version: string;
+    platform: string;
+    electron: string;
+    chrome: string;
+    locale: string;
+    /** true when the UI runs on the website instead of the desktop app */
+    web?: boolean;
+    /** where to download the desktop app */
+    downloadUrl?: string;
+    /** MCP client config for connecting AI apps (desktop only) */
+    mcpConfig?: string;
+  }
+}
+
+interface Window { sightline: SL.Bridge }

@@ -1,0 +1,162 @@
+{
+  "name": "sightline",
+  "productName": "Sightline",
+  "version": "1.0.0",
+  "description": "Free open-source website audit tool: SEO audit, Lighthouse-style scores, Core Web Vitals, accessibility (axe-core), broken link checker, hreflang validator, code coverage, memory leak detector, iPhone/iOS Safari mobile test and Cloudflare audit — desktop app, web app, CLI and MCP server.",
+  "main": "out/electron/main.js",
+  "bin": {
+    "sightline": "out/cli/sightline.js",
+    "sightline-mcp": "out/mcp/stdio.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.renderer.json",
+    "watch": "tsc -p tsconfig.json --watch",
+    "icon": "tsc -p tsconfig.json && electron out/tools/make-icon.js",
+    "package": "npm run dist",
+    "package:win": "npm run dist:win",
+    "package:mac": "npm run dist:mac",
+    "package:linux": "npm run dist:linux",
+    "smoke": "npm run build && electron . --smoke=https://example.com",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.renderer.json --noEmit",
+    "start": "npm run build && electron .",
+    "dev": "npm run build && electron . --dev",
+    "cli": "npm run build && node out/cli/sightline.js",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:linux": "npm run build && electron-builder --linux",
+    "web": "npm run build && node out/server/server.js",
+    "mcp": "npm run build && node out/mcp/stdio.js"
+  },
+  "keywords": [
+    "seo",
+    "seo-audit",
+    "website-audit",
+    "lighthouse",
+    "core-web-vitals",
+    "accessibility",
+    "axe-core",
+    "wcag",
+    "broken-links",
+    "link-checker",
+    "hreflang",
+    "memory-leak",
+    "code-coverage",
+    "performance",
+    "pagespeed",
+    "cloudflare",
+    "dns",
+    "mobile-testing",
+    "ios",
+    "safari",
+    "mcp",
+    "model-context-protocol",
+    "electron",
+    "typescript",
+    "qa",
+    "test-cases",
+    "playwright"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "axe-core": "^4.10.2",
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.6.3"
+  },
+  "build": {
+    "appId": "app.sightline.audit",
+    "productName": "Sightline",
+    "copyright": "Copyright © 2026 Sightline",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**",
+      "!out/tools/**",
+      "!out/server/**",
+      "!out/**/*.map",
+      "renderer/index.html",
+      "renderer/styles.css",
+      "renderer/assets/**",
+      "renderer/dist/**",
+      "!renderer/dist/web-bridge.js",
+      "!renderer/dist/site.js",
+      "!renderer/dist/**/*.map",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "Sightline-Setup-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.png",
+      "artifactName": "Sightline-mac-${arch}.${ext}",
+      "hardenedRuntime": true,
+      "minimumSystemVersion": "11.0"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ],
+      "category": "Development",
+      "icon": "build/icon.png",
+      "maintainer": "Zubair Hussain (https://github.com/Zubair-hussain)",
+      "artifactName": "Sightline-linux-${arch}.${ext}",
+      "executableName": "sightline"
+    },
+    "portable": {
+      "artifactName": "Sightline-Portable-${arch}.${ext}"
+    }
+  },
+  "author": "Zubair Hussain (https://github.com/Zubair-hussain)",
+  "homepage": "https://github.com/Zubair-hussain/Sightline#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zubair-hussain/Sightline.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Zubair-hussain/Sightline/issues"
+  }
+}
