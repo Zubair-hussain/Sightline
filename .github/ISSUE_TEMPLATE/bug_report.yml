@@ -1,0 +1,36 @@
+name: 🐞 Bug report
+description: Something in Sightline is broken or crashes
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations: { required: true }
+  - type: input
+    id: url
+    attributes:
+      label: Audited URL (if you can share it)
+      placeholder: https://example.com
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did it happen?
+      options: [Desktop app — Windows, Desktop app — macOS, Desktop app — Linux, Web app, CLI, MCP / AI app]
+    validations: { required: true }
+  - type: dropdown
+    id: module
+    attributes:
+      label: Which audit?
+      multiple: true
+      options: [SEO, Hreflang, Links, Website health, Performance, Lighthouse, Code coverage, iPhone & iPad, Memory leaks, Cloudflare & DNS, Reports / PDF, Test cases, Other]
+  - type: input
+    id: version
+    attributes:
+      label: Sightline version
+      placeholder: "1.0.0 (shown in the footer)"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Screenshots or logs

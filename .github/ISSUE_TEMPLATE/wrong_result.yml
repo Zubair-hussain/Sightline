@@ -1,0 +1,21 @@
+name: 🎯 Wrong or misleading audit result
+description: A check passed or failed when it shouldn't have
+labels: [accuracy]
+body:
+  - type: input
+    id: url
+    attributes:
+      label: Audited URL
+    validations: { required: true }
+  - type: input
+    id: check
+    attributes:
+      label: Which check?
+      placeholder: "e.g. 'Tap targets ≥ 44pt' in iPhone & iPad"
+    validations: { required: true }
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is the result wrong?
+      description: What should it say, and how did you verify it (DevTools, Lighthouse, a real device…)?
+    validations: { required: true }

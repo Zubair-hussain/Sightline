@@ -1,0 +1,19 @@
+name: ✨ Feature request
+description: Suggest a new audit, check or improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Who needs it and why? (e.g. "agencies need to audit 50 pages at once")
+    validations: { required: true }
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+    validations: { required: true }
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What do you use today instead?
