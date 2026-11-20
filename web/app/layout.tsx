@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website', url: '/', siteName: 'Sightline', title: 'Sightline — Every detail. Audited.',
     description: 'SEO, Lighthouse-style scores, links, performance, Cloudflare, iPhone and memory leaks — in one place.',
-    images: [{ url: '/assets/og.png', width: 1600, height: 1000, alt: 'Sightline website audit report' }],
+    images: [{ url: '/assets/og.png', width: 1280, height: 640, alt: 'Sightline — Every detail. Audited.' }],
   },
   twitter: { card: 'summary_large_image', title: 'Sightline — Every detail. Audited.', description, images: ['/assets/og.png'] },
   robots: { index: true, follow: true },
