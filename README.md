@@ -429,12 +429,14 @@ Desktop audits run entirely on your computer. The web version fetches the audite
 
 | Option | How |
 |---|---|
-| **Vercel** (recommended) | Import the repo, set **Root Directory** to `web`, keep "Include files outside the root directory" on, and set `NEXT_PUBLIC_SITE_URL`. Audits run as Node.js functions (60 s limit) |
+| **Cloudflare frontend + custom router** (recommended) | Cloudflare serves the frontend and routes API requests to identical Vercel, Render and Netlify replicas. Includes shared audit limits, capacity limits, streaming and health probes. Follow the [deployment guide](deploy/README.md). |
+| Vercel alone | Import the repo, set **Root Directory** to `web`, keep "Include files outside the root directory" on, and set `NEXT_PUBLIC_SITE_URL`. Audits run as Node.js functions (60 s declared duration) |
 | Docker | `docker run -p 8080:8080 ghcr.io/zubair-hussain/sightline:latest` (Next.js standalone image built by the **Website Docker image** workflow) |
-| Render | One-click via `render.yaml`; add a `RENDER_DEPLOY_HOOK` secret to redeploy on every push |
+| Render API replica | `render.yaml` enables API-only mode and `/healthz`; enter the shared origin secret. Free services can still sleep or exhaust their monthly allowance. |
+| Netlify API replica | `netlify.toml` deploys the same Next.js API from `web`; configure the shared origin secret. |
 | Any VPS / Fly.io / Railway | Use the `Dockerfile`, expose port 8080, set `SIGHTLINE_TRUST_PROXY=1` behind a proxy |
 
-> On serverless hosts each instance keeps its own rate-limit window. For strict limits under heavy traffic, put the site behind a CDN rule or a shared store.
+> The custom router uses a Durable Object for shared rate limits and capacity tracking. Origin-only deployments retain per-instance limits. Scheduled probes check readiness every five minutes; they do not guarantee Render uptime. See [deployment details and limits](deploy/README.md).
 
 ## 🧩 Configuration reference
 
@@ -447,6 +449,8 @@ Desktop audits run entirely on your computer. The web version fetches the audite
 | `SIGHTLINE_MAX_CONCURRENT` | `3` | Simultaneous web audits per instance |
 | `SIGHTLINE_MAX_PAGES` · `SIGHTLINE_MAX_LINKS` | `6` · `60` | Crawl and link-check limits on the website |
 | `SIGHTLINE_TRUST_PROXY` | auto on Vercel | Use `X-Forwarded-For` for client IPs behind a proxy |
+| `SIGHTLINE_API_ONLY` | `0` | Set `1` on API replicas to reject frontend routes and require the router secret |
+| `SIGHTLINE_ORIGIN_SECRET` | unset | Secret shared by all API replicas and the router's `ORIGIN_SECRET`; never expose in client code |
 | `CLOUDFLARE_API_TOKEN` | — | CLI/MCP: read-only token for zone-settings review |
 
 Desktop settings (language, appearance, report style, crawl and link limits, Lighthouse device, iPhone/iPad, memory steps, allowed sites, Cloudflare token) are in the app's **Settings**.
