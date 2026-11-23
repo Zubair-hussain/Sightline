@@ -53,7 +53,7 @@ The Blueprint retains the existing **free** plan; this change does not purchase 
 
 ### Netlify
 
-Import the repository with root-level `netlify.toml`. It selects `web` as the base, builds Next.js and uses Netlify's Next.js adapter for the same API routes. Enter the origin secret in Netlify's environment settings, with build/runtime scopes as required. The API-only environment settings are already in the config. Confirm the published `/healthz` endpoint and direct-API rejection before adding this replica.
+Import the repository with root-level `netlify.toml`. It builds `web` from the repository root and publishes `web/.next`, avoiding legacy base-directory resolution differences. The pinned Next.js adapter is installed from the root package. Set **all variables in the table above** in Netlify's environment settings: configuration-file environment variables alone do not reach deployed functions. On the free plan use default scopes; granular scopes and some secret flags require plan features. Confirm the published `/healthz` endpoint and direct-API rejection before adding this replica.
 
 Audits use the same five server-side modules everywhere. The desktop-only browser modules remain desktop-only. Serverless execution time and request-size limits still apply: the audit route declares a 60-second Vercel duration; check your provider's actual limits and test a representative public-site audit before launch. Slow third-party sites can exceed serverless limits; prefer Render for those workloads. The router does not migrate a partially completed audit between hosts.
 
