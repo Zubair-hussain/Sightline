@@ -1,13 +1,17 @@
 [build]
-  base = "web"
-  command = "npm run build"
-  publish = ".next"
+  base = "."
+  command = "npm ci --prefix web && npm --prefix web run build"
+  publish = "web/.next"
 
 [build.environment]
   NODE_VERSION = "22"
   SIGHTLINE_API_ONLY = "1"
   SIGHTLINE_TRUST_PROXY = "1"
   NEXT_TELEMETRY_DISABLED = "1"
+  ELECTRON_SKIP_BINARY_DOWNLOAD = "1"
 
 # Netlify's Next.js adapter deploys the same Node API handlers as Vercel.
 # Set SIGHTLINE_ORIGIN_SECRET in Netlify's environment settings, never here.
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
