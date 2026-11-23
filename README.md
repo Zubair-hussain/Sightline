@@ -21,6 +21,20 @@ A free, open-source **website audit tool** that runs an SEO audit, Lighthouse-st
 
 </div>
 
+## Watch the intro
+
+[Watch the 40-second Sightline intro video](video/renders/sightline-intro.mp4).
+
+The editable video project, scenes and assets are in [`video/`](video/). To preview or render it locally:
+
+```bash
+cd video
+npm run dev       # open the HyperFrames preview
+npm run render    # render the video to MP4
+```
+
+See [`video/CREDITS.md`](video/CREDITS.md) for media credits.
+
 ---
 
 ## Table of contents
