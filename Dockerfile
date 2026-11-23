@@ -1,5 +1,5 @@
 # Sightline website + web app + audit API (Next.js, standalone output)
-FROM node:22-slim AS build
+FROM node:26-slim AS build
 WORKDIR /repo
 # The web app shares the audit engine, types and UI with the desktop app.
 COPY tsconfig.json tsconfig.renderer.json llms.txt ./
@@ -11,7 +11,7 @@ RUN cd web && npm ci
 COPY web ./web
 RUN cd web && SIGHTLINE_STANDALONE=1 npm run build
 
-FROM node:22-slim
+FROM node:26-slim
 WORKDIR /srv
 ENV NODE_ENV=production PORT=8080 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1
 COPY --from=build /repo/web/.next/standalone ./
