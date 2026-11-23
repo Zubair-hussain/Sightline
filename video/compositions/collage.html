@@ -1,0 +1,55 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #ffffff; font-family: Inter, sans-serif; color: #000; }
+    #cl-wrap { position: absolute; inset: 0; }
+    .cl-c { position: absolute; overflow: hidden; background: #f2f2f7; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16); }
+    .cl-c img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cl-t { display: flex; flex-direction: column; justify-content: flex-end; padding: 26px 30px; }
+    .cl-big { font-size: 150px; font-weight: 700; letter-spacing: -0.05em; line-height: 0.9; }
+    .cl-mid { font-size: 58px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.02; }
+    .cl-sm { font-size: 28px; font-weight: 600; margin-top: 10px; }
+    .cl-over { position: absolute; left: 30px; top: 22px; color: #fff; font-size: 64px; font-weight: 700; letter-spacing: -0.03em; text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+    #cl-white { position: absolute; inset: 0; background: #fff; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="collage" data-width="1920" data-height="1080">
+    <div id="cl-wrap"></div>
+    <div id="cl-white"></div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const B = 0.448;
+    const img = (f, over) => '<img src="assets/' + f + '" alt="">' + (over ? '<div class="cl-over">' + over + "</div>" : "");
+    const txt = (bg, fg, a, b, cls) => ({ bg, fg, html: '<div class="' + (cls || "cl-mid") + '">' + a + '</div><div class="cl-sm">' + b + "</div>" });
+    // real screens from the app and its report, plus type cards with real results
+    const C = [
+      [40, 50, 540, 337, img("home.jpg")],
+      [610, 24, 380, 250, txt("#e8f1ff", "#0066cc", "81", "SEO score", "cl-big")],
+      [1020, 60, 560, 350, img("lighthouse.jpg")],
+      [1610, 30, 290, 630, img("shot-iphone.jpg")],
+      [80, 420, 360, 470, txt("#000", "#fff", "77", "Overall score", "cl-big")],
+      [470, 310, 520, 325, img("rings.jpg")],
+      [1010, 440, 460, 300, img("bg-sky-pink.jpg", "Sightline")],
+      [1490, 690, 400, 260, img("memory.jpg")],
+      [40, 910, 470, 300, txt("#0066cc", "#fff", "MCP", "Works with Cursor and VS Code")],
+      [460, 665, 520, 325, img("coverage.jpg")],
+      [1000, 770, 470, 290, txt("#c9c2f0", "#0b2a55", "38 tests", "Launch-day test plan")],
+      [1500, 980, 400, 260, img("iphone.jpg")],
+      [610, 250, 700, 560, img("bg-hills.jpg", "Every detail.")],
+    ];
+    const wrap = document.getElementById("cl-wrap");
+    C.forEach(([x, y, w, h, c], i) => {
+      const d = document.createElement("div"); d.id = "cl-" + i;
+      d.style.cssText = "left:" + x + "px;top:" + y + "px;width:" + w + "px;height:" + h + "px;";
+      if (typeof c === "string") { d.className = "cl-c"; d.innerHTML = c; }
+      else { d.className = "cl-c cl-t"; d.style.background = c.bg; d.style.color = c.fg; d.innerHTML = c.html; }
+      wrap.appendChild(d);
+      // one card every half beat; the last, biggest card lands on the downbeat
+      const t = i < 12 ? i * B * 0.5 : B * 6;
+      tl.fromTo("#cl-" + i, { opacity: 0, scale: 0.86, y: 24 }, { opacity: 1, scale: 1, y: 0, duration: 0.26, ease: "expo.out" }, t);
+    });
+    tl.fromTo("#cl-wrap", { scale: 1.06 }, { scale: 1, duration: B * 8, ease: "power1.out" }, 0);
+    tl.to("#cl-white", { opacity: 1, duration: 0.2, ease: "power2.in" }, B * 8 - 0.2);
+    window.__timelines["collage"] = tl;
+  </script>
+</template>
