@@ -1,0 +1,9 @@
+.git/
+**/node_modules/
+video/
+dist/
+out/
+renderer/dist/
+web/.next/
+web/public/app/
+deploy/
