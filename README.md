@@ -23,7 +23,7 @@ A free, open-source **website audit tool** that runs an SEO audit, Lighthouse-st
 
 ## Watch the intro
 
-[Watch the 40-second Sightline intro video](video/renders/sightline-intro.mp4) (720p MP4, 1.47 MB, with audio).
+[Watch the 40-second Sightline intro video](https://github.com/Zubair-hussain/Sightline/blob/feat/social-preview/video/renders/sightline-intro.mp4) (720p MP4, 1.47 MB, with audio).
 
 The editable video project, scenes and assets are in [`video/`](video/). To preview or render it locally:
 
