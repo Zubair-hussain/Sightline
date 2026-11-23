@@ -1,0 +1,38 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #ffffff; font-family: Inter, sans-serif; color: #000; }
+    .gl-cut { position: absolute; inset: 0; opacity: 0; }
+    .gl-o, .gl-s { position: absolute; top: 0; width: 960px; height: 1080px; display: flex; align-items: center; justify-content: center;
+      font-size: 760px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+    .gl-o { left: 0; color: transparent; -webkit-text-stroke: 2px #000; }
+    .gl-s { left: 960px; color: #000; }
+    .gl-lab { position: absolute; left: 0; width: 960px; top: 516px; text-align: center; font-size: 30px; font-weight: 600; line-height: 1.25; }
+    .gl-lab b { display: block; font-size: 40px; color: #0066cc; }
+    .gl-base, .gl-cap { position: absolute; left: 40px; width: 880px; height: 1px; background: #000; transform-origin: 0 50%; }
+    .gl-base { top: 812px; }
+    .gl-cap { top: 262px; }
+  </style>
+  <div id="root" data-composition-id="glyphs" data-width="1920" data-height="1080"></div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const B = 0.448;
+    // each glyph stands for a real result from the audit of the Sightline site
+    const G = [["S", "SEO", "100"], ["A", "Accessibility", "93"], ["0", "Layout shift", "0"],
+      ["%", "Memory growth", "+0.7%"], ["i", "iPhone &amp; iPad", "83"], ["?", "Every issue,", "explained"]];
+    const root = document.getElementById("root");
+    G.forEach(([g, a, b], i) => {
+      const c = document.createElement("div"); c.className = "gl-cut"; c.id = "gl-c" + i;
+      c.innerHTML = '<div class="gl-cap" id="gl-cap' + i + '"></div><div class="gl-base" id="gl-base' + i + '"></div>' +
+        '<div class="gl-o">' + g + '</div><div class="gl-lab">' + a + "<b>" + b + '</b></div><div class="gl-s" id="gl-s' + i + '">' + g + "</div>";
+      root.appendChild(c);
+      const t = i * 2 * B;
+      // beat 1: the outline glyph with its type guides; beat 2: the solid glyph slams in beside it
+      tl.to("#gl-c" + i, { opacity: 1, duration: 0.01 }, t);
+      tl.fromTo(["#gl-cap" + i, "#gl-base" + i], { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.out" }, t);
+      tl.fromTo("#gl-s" + i, { opacity: 0, scale: 1.18 }, { opacity: 1, scale: 1, duration: 0.22, ease: "expo.out" }, t + B);
+      if (i < G.length - 1) tl.to("#gl-c" + i, { opacity: 0, duration: 0.01 }, t + 2 * B);
+    });
+    window.__timelines["glyphs"] = tl;
+  </script>
+</template>

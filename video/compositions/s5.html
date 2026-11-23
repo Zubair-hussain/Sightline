@@ -1,0 +1,41 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; font-family: Inter, sans-serif; color: #1d1d1f; }
+    .s5cap { position: absolute; left: 120px; width: 600px; top: 440px; font-size: 62px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.06; opacity: 0; }
+    .s5acc { color: #0066cc; }
+    #s5-win { position: absolute; left: 780px; top: 200px; width: 1100px; height: 687px; border-radius: 24px; overflow: hidden; background: #000;
+      box-shadow: 0 40px 120px rgba(0, 0, 0, 0.28); }
+    .s5beat { position: absolute; inset: 0; opacity: 0; }
+    .s5beat .z { position: absolute; inset: 0; }
+    .s5beat img { position: absolute; left: 0; top: 0; width: 1100px; height: 687px; display: block; }
+  </style>
+  <div id="root" data-composition-id="s5" data-width="1920" data-height="1080">
+    <div class="s5cap" id="s5-cap0">Unused code, <span class="s5acc">file by file.</span></div>
+    <div class="s5cap" id="s5-cap1">Memory leaks, <span class="s5acc">caught.</span></div>
+    <div class="s5cap" id="s5-cap2">Safari on iPhone, <span class="s5acc">checked.</span></div>
+    <div id="s5-win">
+      <div class="s5beat" id="s5-b0"><div class="z" id="s5-z0"><img src="assets/coverage.jpg" alt="Code coverage by file" /></div></div>
+      <div class="s5beat" id="s5-b1"><div class="z" id="s5-z1"><img src="assets/memory.jpg" alt="Memory chart with no leaks detected" /></div></div>
+      <div class="s5beat" id="s5-b2"><div class="z" id="s5-z2"><img src="assets/iphone.jpg" alt="iPhone preview of the audited page" /></div></div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const origins = ["50% 45%", "50% 62%", "28% 62%"];
+    tl.fromTo("#s5-win", { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out" }, 0);
+    for (let i = 0; i < 3; i++) {
+      const b = 0.15 + 2.1 * i;
+      tl.fromTo("#s5-b" + i, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power2.out" }, b);
+      tl.fromTo("#s5-cap" + i, { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, b + 0.05);
+      tl.fromTo("#s5-z" + i, { scale: 1, transformOrigin: origins[i] }, { scale: 1.38, duration: 0.8, ease: "power3.inOut" }, b + 0.25);
+      if (i < 2) {
+        tl.to("#s5-b" + i, { opacity: 0, filter: "blur(8px)", duration: 0.18, ease: "power2.in" }, b + 1.9);
+        tl.to("#s5-cap" + i, { opacity: 0, filter: "blur(8px)", duration: 0.18, ease: "power2.in" }, b + 1.9);
+      }
+    }
+    tl.to("#s5-win", { opacity: 0, duration: 0.25, ease: "power2.in" }, 6.2);
+    tl.to("#s5-cap2", { opacity: 0, filter: "blur(8px)", duration: 0.25, ease: "power2.in" }, 6.2);
+    window.__timelines["s5"] = tl;
+  </script>
+</template>

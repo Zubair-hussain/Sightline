@@ -1,0 +1,99 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #ffffff; font-family: Inter, sans-serif; color: #000; }
+    #lo-mark { position: absolute; left: 720px; top: 150px; width: 480px; height: 480px; }
+    #lo-mark svg { width: 480px; height: 480px; overflow: visible; }
+    .lo-g { fill: none; stroke: #000; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+    .lo-lab { font-family: Inter, sans-serif; font-size: 46px; font-weight: 500; fill: #6e6e73; }
+    #lo-word { position: absolute; left: 0; right: 0; top: 440px; text-align: center; font-size: 132px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.1; }
+    .lo-ch { display: inline-block; color: rgba(0, 0, 0, 0); -webkit-text-stroke: 1.5px #000; padding: 0 2px; }
+    #lo-tag { position: absolute; left: 0; right: 0; top: 618px; text-align: center; font-size: 64px; font-weight: 700; letter-spacing: -0.03em; }
+    #lo-tag .acc { color: #0066cc; }
+    #lo-sub { position: absolute; left: 0; right: 0; top: 718px; text-align: center; font-size: 36px; font-weight: 500; color: #48484a; }
+    #lo-btn { position: absolute; left: 0; right: 0; top: 800px; display: flex; justify-content: center; }
+    #lo-btn div { padding: 22px 56px; border-radius: 999px; background: #000; color: #fff; font-size: 36px; font-weight: 600; }
+    #lo-repo { position: absolute; left: 0; right: 0; top: 930px; text-align: center; font-size: 30px; font-weight: 500; color: #6e6e73; }
+  </style>
+  <div id="root" data-composition-id="logo" data-width="1920" data-height="1080">
+    <div id="lo-mark">
+      <svg viewBox="0 0 1024 1024" role="img" aria-label="Sightline logo">
+        <defs>
+          <linearGradient id="lo-gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a2c" /><stop offset="1" stop-color="#000000" /></linearGradient>
+          <clipPath id="lo-clip"><circle id="lo-clipc" cx="470" cy="470" r="0" /></clipPath>
+        </defs>
+        <!-- construction guides -->
+        <g id="lo-guides">
+          <line id="lo-gh" class="lo-g" x1="60" y1="470" x2="980" y2="470" stroke-dasharray="920" stroke-dashoffset="920" />
+          <line id="lo-gv" class="lo-g" x1="470" y1="60" x2="470" y2="980" stroke-dasharray="920" stroke-dashoffset="920" />
+          <circle id="lo-gring" class="lo-g" cx="470" cy="470" r="0" />
+          <circle class="lo-g lo-t" cx="470" cy="240" r="34" />
+          <circle class="lo-g lo-t" cx="700" cy="470" r="34" />
+          <circle class="lo-g lo-t" cx="470" cy="700" r="34" />
+          <circle class="lo-g lo-t" cx="240" cy="470" r="34" />
+          <rect id="lo-gtile" class="lo-g" x="64" y="64" width="896" height="896" rx="200" />
+          <line id="lo-gd" class="lo-g" x1="470" y1="470" x2="880" y2="880" stroke-dasharray="580" stroke-dashoffset="580" />
+          <circle class="lo-g lo-e" cx="640" cy="640" r="22" />
+          <circle class="lo-g lo-e" cx="800" cy="800" r="22" />
+          <path id="lo-gc" class="lo-g" d="M385 478 L445 538 L565 410" stroke-dasharray="262" stroke-dashoffset="262" />
+          <text class="lo-lab" id="lo-l1" x="720" y="250">r 230</text>
+          <text class="lo-lab" id="lo-l2" x="560" y="560">45°</text>
+        </g>
+        <!-- the mark itself -->
+        <g clip-path="url(#lo-clip)"><rect x="64" y="64" width="896" height="896" rx="200" fill="url(#lo-gr)" /></g>
+        <circle id="lo-track" cx="470" cy="470" r="230" fill="none" stroke="#3a3a3c" stroke-width="56" opacity="0" />
+        <circle id="lo-ring" cx="470" cy="470" r="230" fill="none" stroke="#2997ff" stroke-width="56" stroke-linecap="round" stroke-dasharray="0 1445" transform="rotate(-90 470 470)" opacity="0" />
+        <path id="lo-handle" d="M640 640 L800 800" stroke="#ffffff" stroke-width="72" stroke-linecap="round" stroke-dasharray="227" stroke-dashoffset="227" />
+        <path id="lo-check" d="M385 478 L445 538 L565 410" fill="none" stroke="#ffffff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="262" stroke-dashoffset="262" />
+        <circle id="lo-dot" cx="470" cy="470" r="34" fill="#000" />
+      </svg>
+    </div>
+    <div id="lo-word"></div>
+    <div id="lo-tag">Every detail. <span class="acc">Audited.</span></div>
+    <div id="lo-sub">Free for Windows · macOS · Linux · Web</div>
+    <div id="lo-btn"><div>Download Sightline</div></div>
+    <div id="lo-repo">github.com/Zubair-hussain/Sightline</div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const B = 0.448;
+    const word = document.getElementById("lo-word");
+    const chars = [];
+    for (const ch of "Sightline") { const s = document.createElement("span"); s.className = "lo-ch"; s.textContent = ch; word.appendChild(s); chars.push(s); }
+
+    // beat 0: the dot lands where the ring's centre will be
+    tl.fromTo("#lo-dot", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.35, ease: "back.out(3)" }, 0);
+    // beat 1: construction: the ring circle opens out of the dot, axes draw through it
+    tl.to("#lo-gring", { attr: { r: 230 }, duration: 0.5, ease: "expo.out" }, B);
+    tl.to("#lo-dot", { attr: { r: 10 }, duration: 0.3, ease: "power3.out" }, B);
+    tl.to(["#lo-gh", "#lo-gv"], { attr: { "stroke-dashoffset": 0 }, duration: 0.5, ease: "power2.out" }, B);
+    // beat 2: tangent circles and the tile outline
+    tl.fromTo(".lo-t", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.05 }, B * 2);
+    tl.fromTo("#lo-gtile", { opacity: 0, scale: 0.94, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out" }, B * 2.5);
+    // beat 3–4: the handle's 45° line, its end points, the check and the measurements
+    tl.to("#lo-gd", { attr: { "stroke-dashoffset": 0 }, duration: 0.4, ease: "power2.out" }, B * 3);
+    tl.fromTo(".lo-e", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.25, ease: "back.out(2)", stagger: 0.08 }, B * 3.4);
+    tl.to("#lo-gc", { attr: { "stroke-dashoffset": 0 }, duration: 0.4, ease: "power2.out" }, B * 4);
+    tl.fromTo(["#lo-l1", "#lo-l2"], { opacity: 0 }, { opacity: 1, duration: 0.2, stagger: 0.1 }, B * 4.2);
+    // beat 6: the mark fills: tile floods out from the centre, ring, handle and check draw in colour
+    tl.to("#lo-dot", { opacity: 0, duration: 0.05 }, B * 6);
+    tl.to("#lo-clipc", { attr: { r: 700 }, duration: 0.55, ease: "power3.out" }, B * 6);
+    tl.to("#lo-track", { opacity: 1, duration: 0.2 }, B * 6.2);
+    tl.to("#lo-ring", { opacity: 1, duration: 0.01 }, B * 6.3);
+    tl.to("#lo-ring", { attr: { "stroke-dasharray": "1083 1445" }, duration: 0.7, ease: "power2.inOut" }, B * 6.3);
+    tl.to("#lo-check", { attr: { "stroke-dashoffset": 0 }, duration: 0.3, ease: "power3.out" }, B * 7);
+    tl.to("#lo-handle", { attr: { "stroke-dashoffset": 0 }, duration: 0.28, ease: "power3.out" }, B * 7.3);
+    tl.to("#lo-guides", { opacity: 0, duration: 0.3 }, B * 6.4);
+    // beat 8: the mark rises and the wordmark builds letter by letter: outline in guide boxes, then solid
+    tl.to("#lo-mark", { scale: 0.6, y: -128, duration: 0.6, ease: "power3.inOut" }, B * 8);
+    tl.fromTo(chars, { opacity: 0, boxShadow: "inset 0 0 0 1px rgba(0,0,0,0)" }, { opacity: 1, boxShadow: "inset 0 0 0 1px rgba(142,142,147,0.7)", duration: 0.2, stagger: 0.035 }, B * 8.6);
+    tl.to(chars, { color: "#000", boxShadow: "inset 0 0 0 1px rgba(142,142,147,0)", duration: 0.25, stagger: 0.035 }, B * 10);
+    tl.set(chars, { webkitTextStroke: "0px #000" }, B * 10 + 0.6);
+    // beats 11–13: promise, platforms, call to action
+    tl.fromTo("#lo-tag", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, B * 11);
+    tl.fromTo("#lo-sub", { opacity: 0 }, { opacity: 1, duration: 0.35 }, B * 12);
+    tl.fromTo("#lo-btn div", { opacity: 0, scale: 0.9, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.7)" }, B * 13);
+    tl.fromTo("#lo-repo", { opacity: 0 }, { opacity: 1, duration: 0.35 }, B * 13.5);
+    window.__timelines["logo"] = tl;
+  </script>
+</template>

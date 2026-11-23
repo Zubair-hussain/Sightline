@@ -1,0 +1,69 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: Inter, sans-serif; }
+    #hk-bg { position: absolute; left: -60px; top: -40px; width: 2040px; height: 1160px; background: url(assets/bg-sky-blue.jpg) center / cover; }
+    #hk-cam { position: absolute; inset: 0; }
+    #hk-pill { position: absolute; left: 190px; top: 445px; width: 1540px; height: 190px; border-radius: 95px;
+      background: rgba(255, 255, 255, 0.62); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%);
+      border: 1.5px solid rgba(255, 255, 255, 0.85); box-shadow: 0 40px 100px rgba(10, 40, 90, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      display: flex; align-items: center; padding: 0 40px 0 46px; gap: 30px; }
+    #hk-plus { width: 74px; height: 74px; flex: none; }
+    #hk-line { flex: 1; font-size: 60px; font-weight: 500; letter-spacing: -0.02em; color: #1d1d1f; white-space: nowrap; overflow: hidden; }
+    #hk-caret { display: inline-block; width: 4px; height: 66px; background: #0066cc; vertical-align: -12px; margin-left: 4px; }
+    #hk-btn { flex: none; height: 112px; padding: 0 56px; border-radius: 56px; background: #0066cc; color: #fff; font-size: 44px; font-weight: 600;
+      display: flex; align-items: center; gap: 16px; box-shadow: 0 12px 30px rgba(0, 102, 204, 0.45); }
+    #hk-btn svg { width: 40px; height: 40px; }
+    #hk-cursor { position: absolute; left: 0; top: 0; width: 76px; height: 76px; z-index: 20; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35)); }
+    #hk-pix { position: absolute; inset: 0; z-index: 30; }
+    .hk-px { position: absolute; width: 121px; height: 121px; background: #ffffff; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="hook" data-width="1920" data-height="1080">
+    <div id="hk-bg"></div>
+    <div id="hk-cam">
+      <div id="hk-pill">
+        <svg id="hk-plus" viewBox="0 0 74 74" aria-hidden="true"><circle cx="37" cy="37" r="34" fill="none" stroke="#1d1d1f" stroke-width="3" /><path d="M37 22v30M22 37h30" stroke="#1d1d1f" stroke-width="3.5" stroke-linecap="round" /></svg>
+        <div id="hk-line"><span id="hk-text"></span><span id="hk-caret"></span></div>
+        <div id="hk-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="#fff" stroke-width="2.4" /><path d="m20 20-3.5-3.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" /></svg>Audit</div>
+      </div>
+    </div>
+    <svg id="hk-cursor" viewBox="0 0 100 100" aria-hidden="true"><path d="M14 8L14 78L33 62L47 92L62 85L48 56L74 54Z" fill="#ffffff" stroke="#1d1d1f" stroke-width="4" stroke-linejoin="round" /></svg>
+    <div id="hk-pix" data-layout-ignore></div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const FULL = "Is my website ready for launch?";
+    const textEl = document.getElementById("hk-text");
+    const type = { n: 0 };
+
+    // background breathes in slowly; camera starts close on the bar and pulls back while it types (ref 3)
+    tl.fromTo("#hk-bg", { scale: 1.1 }, { scale: 1, duration: 4.5, ease: "power1.out" }, 0);
+    tl.fromTo("#hk-cam", { scale: 1.55, x: 520, transformOrigin: "20% 50%" }, { scale: 1, x: 0, duration: 2.4, ease: "power2.inOut" }, 0.15);
+    tl.fromTo("#hk-pill", { opacity: 0, filter: "blur(16px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 0);
+    tl.to(type, { n: FULL.length, duration: 1.95, ease: "none", onUpdate: () => { textEl.textContent = FULL.slice(0, Math.round(type.n)); } }, 0.4);
+    for (const t of [2.55, 3.05]) tl.set("#hk-caret", { opacity: 0 }, t);
+    for (const t of [2.8, 3.3]) tl.set("#hk-caret", { opacity: 1 }, t);
+
+    // cursor to the Audit button and press (button centre ≈ 1528, 540)
+    tl.fromTo("#hk-cursor", { x: 2050, y: 1120, scale: 1 }, { x: 1518, y: 536, duration: 0.65, ease: "power3.inOut" }, 2.55);
+    tl.to("#hk-cursor", { scale: 0.86, duration: 0.08, ease: "power2.out", transformOrigin: "14% 8%" }, 3.2);
+    tl.to("#hk-cursor", { scale: 1, duration: 0.12, ease: "power2.out" }, 3.28);
+    tl.to("#hk-btn", { scale: 0.93, duration: 0.08, ease: "power2.out" }, 3.2);
+    tl.to("#hk-btn", { scale: 1, duration: 0.15, ease: "power2.out" }, 3.28);
+
+    // pixel dissolve spreading from the click point into the next scene's stage colour
+    const pix = document.getElementById("hk-pix");
+    let seed = 7;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let r = 0; r < 9; r++) for (let c = 0; c < 16; c++) {
+      const d = document.createElement("div");
+      d.className = "hk-px";
+      d.style.left = c * 120 + "px"; d.style.top = r * 120 + "px";
+      pix.appendChild(d);
+      const dist = Math.hypot(c * 120 + 60 - 1528, r * 120 + 60 - 540);
+      const at = 3.38 + (dist / 2100) * 0.8 + rnd() * 0.14;
+      tl.fromTo(d, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, at);
+    }
+    window.__timelines["hook"] = tl;
+  </script>
+</template>

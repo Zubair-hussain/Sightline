@@ -1,0 +1,15 @@
+{
+  "name": "sightline-edge",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-frontend.mjs",
+    "test": "node --test test/*.test.mjs",
+    "check": "wrangler deploy --dry-run",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.166.0"
+  }
+}

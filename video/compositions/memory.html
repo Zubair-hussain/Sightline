@@ -1,0 +1,72 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: Inter, sans-serif; color: #fff; }
+    #mm-bg { position: absolute; left: -60px; top: -40px; width: 2040px; height: 1160px; background: url(assets/bg-sky-pink.jpg) center / cover; }
+    #mm-title { position: absolute; left: 0; right: 0; top: 92px; text-align: center; font-size: 84px; font-weight: 700; letter-spacing: -0.035em; text-shadow: 0 6px 30px rgba(40, 10, 40, 0.35); }
+    #mm-card { position: absolute; left: 300px; top: 260px; width: 1320px; height: 690px; border-radius: 40px; background: rgba(16, 18, 28, 0.48);
+      backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%); border: 1.5px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 40px 100px rgba(30, 10, 40, 0.35); }
+    #mm-head { position: absolute; left: 60px; top: 46px; right: 60px; display: flex; justify-content: space-between; align-items: baseline; }
+    #mm-head .t { font-size: 36px; font-weight: 700; }
+    #mm-head .s { font-size: 28px; color: rgba(255, 255, 255, 0.75); }
+    #mm-chart { position: absolute; left: 60px; top: 140px; width: 1200px; height: 420px; overflow: visible; }
+    .mm-grid { stroke: rgba(255, 255, 255, 0.12); stroke-width: 1.5; }
+    .mm-ax { fill: rgba(255, 255, 255, 0.8); font-size: 26px; font-family: Inter, sans-serif; }
+    #mm-badge { position: absolute; left: 0; top: 0; padding: 10px 18px; border-radius: 14px; background: #2997ff; font-size: 26px; font-weight: 700; white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(41, 151, 255, 0.5); }
+    #mm-ok { position: absolute; left: 60px; top: 590px; display: flex; align-items: center; gap: 16px; font-size: 36px; font-weight: 700; }
+    #mm-ok svg { width: 46px; height: 46px; }
+  </style>
+  <div id="root" data-composition-id="memory" data-width="1920" data-height="1080">
+    <div id="mm-bg"></div>
+    <div id="mm-title">Memory leaks? <span style="color:#9fd0ff">Tested.</span></div>
+    <div id="mm-card">
+      <div id="mm-head"><div class="t">JS heap after garbage collection</div><div class="s">9 rounds of real use · +0.7%</div></div>
+      <svg id="mm-chart" viewBox="0 0 1200 420" data-layout-allow-overflow></svg>
+      <div id="mm-badge">2.40 MB</div>
+      <div id="mm-ok"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#30d158"/><path d="m7 12.4 3.2 3.2L17 8.8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>No leaks detected</div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    // real samples (MB) from the memory test
+    const D = [2.40, 2.40, 2.40, 2.40, 2.40, 2.41, 2.41, 2.41, 2.42];
+    const svg = document.getElementById("mm-chart");
+    const L = 90, R = 1180, T = 20, B = 380, lo = 2.30, hi = 2.50;
+    const X = (i) => L + (i / (D.length - 1)) * (R - L);
+    const Y = (v) => T + (1 - (v - lo) / (hi - lo)) * (B - T);
+    let g = "";
+    [2.30, 2.40, 2.50].forEach((v) => { g += '<line class="mm-grid" x1="' + L + '" x2="' + R + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text class="mm-ax" x="' + (L - 14) + '" y="' + (Y(v) + 8) + '" text-anchor="end">' + v.toFixed(2) + "</text>"; });
+    const pts = D.map((v, i) => X(i) + "," + Y(v)).join(" L");
+    g += '<path id="mm-area" d="M' + X(0) + "," + B + " L" + pts + " L" + X(D.length - 1) + "," + B + ' Z" fill="rgba(41,151,255,.18)"/>';
+    g += '<path id="mm-line" d="M' + pts + '" fill="none" stroke="#2997ff" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>';
+    g += '<circle id="mm-dot" r="10" fill="#fff" stroke="#2997ff" stroke-width="5" cx="' + X(0) + '" cy="' + Y(D[0]) + '"/>';
+    svg.innerHTML = g;
+    const line = document.getElementById("mm-line");
+    const len = line.getTotalLength();
+    line.setAttribute("stroke-dasharray", len + " " + len);
+    line.setAttribute("stroke-dashoffset", len);
+    const dot = document.getElementById("mm-dot"), badge = document.getElementById("mm-badge");
+    const st = { p: 0 };
+    const draw = () => {
+      const l = len * st.p;
+      line.setAttribute("stroke-dashoffset", len - l);
+      const pt = line.getPointAtLength(l);
+      dot.setAttribute("cx", pt.x); dot.setAttribute("cy", pt.y);
+      // badge rides the curve with the live value (reference 2)
+      const idx = Math.min(D.length - 1, Math.round(st.p * (D.length - 1)));
+      badge.textContent = D[idx].toFixed(2) + " MB";
+      badge.style.transform = "translate(" + (60 + pt.x - 70) + "px," + (140 + pt.y - 80) + "px)";
+    };
+    draw();
+    tl.fromTo("#mm-bg", { scale: 1.08 }, { scale: 1, duration: 4.38, ease: "power1.out" }, 0);
+    tl.fromTo("#mm-card", { opacity: 0, y: 80, filter: "blur(14px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 0.05);
+    tl.fromTo("#mm-title", { opacity: 0, filter: "blur(12px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "expo.out" }, 0.2);
+    tl.fromTo("#mm-area", { opacity: 0 }, { opacity: 1, duration: 1.4, ease: "power2.out" }, 0.6);
+    tl.to(st, { p: 1, duration: 1.5, ease: "power2.inOut", onUpdate: draw }, 0.55);
+    tl.fromTo("#mm-ok", { opacity: 0, scale: 0.8, x: -20 }, { opacity: 1, scale: 1, x: 0, duration: 0.45, ease: "back.out(1.7)", transformOrigin: "0% 50%" }, 2.2);
+    tl.to(["#mm-card", "#mm-title"], { x: -300, opacity: 0, filter: "blur(16px)", duration: 0.32, ease: "power3.in" }, 4.05);
+    window.__timelines["memory"] = tl;
+  </script>
+</template>

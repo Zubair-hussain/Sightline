@@ -27,7 +27,8 @@
     "dist:linux": "npm run build && electron-builder --linux",
     "web": "npm --prefix web run dev",
     "mcp": "npm run build && node out/mcp/stdio.js",
-    "web:build": "npm --prefix web run build"
+    "web:build": "npm --prefix web run build",
+    "thumbnail": "tsc -p tsconfig.json && electron out/tools/make-thumbnail.js"
   },
   "keywords": [
     "seo",
@@ -64,6 +65,7 @@
     "cheerio": "^1.0.0"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "5.16.9",
     "@types/node": "^22.9.0",
     "electron": "^33.2.1",
     "electron-builder": "^25.1.8",

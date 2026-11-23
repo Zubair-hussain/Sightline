@@ -12,6 +12,8 @@ const securityHeaders = [
 const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // The Cloudflare frontend serves pre-rendered files without a Next image server.
+  images: { unoptimized: process.env.SIGHTLINE_EDGE_BUILD === '1' },
   // Docker/self-hosting: a minimal server bundle. Vercel ignores this.
   output: process.env.SIGHTLINE_STANDALONE ? 'standalone' : undefined,
   // The audit engine lives in ../src/engine and is shared with the desktop app, CLI and MCP server.

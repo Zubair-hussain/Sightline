@@ -1,0 +1,48 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #ffffff; font-family: Inter, sans-serif; color: #000; }
+    #dt-row { position: absolute; left: 0; right: 0; top: 505px; height: 70px; display: flex; justify-content: center; align-items: center; gap: 22px; }
+    #dt-text { font-size: 56px; font-weight: 500; letter-spacing: -0.025em; white-space: nowrap; }
+    #dt-dot { width: 34px; height: 34px; border-radius: 50%; background: #000; flex: none; }
+    #dt-big { position: absolute; left: 750px; top: 330px; width: 420px; height: 420px; border-radius: 50%; background: #000; opacity: 0; }
+    #dt-rings { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="dot" data-width="1920" data-height="1080">
+    <div id="dt-row"><span id="dt-text"></span><div id="dt-dot"></div></div>
+    <div id="dt-big"></div>
+    <svg id="dt-rings" viewBox="0 0 1920 1080" aria-hidden="true">
+      <circle id="dt-r1" cx="960" cy="540" r="210" fill="none" stroke="#000" stroke-width="2" />
+      <circle id="dt-r2" cx="960" cy="540" r="64" fill="none" stroke="#000" stroke-width="2" />
+      <line id="dt-h" x1="700" y1="540" x2="1220" y2="540" stroke="#000" stroke-width="1" stroke-dasharray="520" stroke-dashoffset="520" />
+    </svg>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const B = 0.448; // one beat of the music
+    const MSG = "Every detail matters.";
+    const txt = document.getElementById("dt-text");
+    const st = { n: 0 };
+    const draw = () => { txt.textContent = MSG.slice(0, Math.round(st.n)); };
+    tl.eventCallback("onUpdate", draw);
+    draw();
+    // the dot lands on the downbeat, then the line types out beside it (the dot rides along as the caret)
+    tl.fromTo("#dt-dot", { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(3)" }, 0);
+    tl.to(st, { n: MSG.length, duration: 1.45, ease: "none" }, B);
+    tl.to("#dt-dot", { scale: 1.25, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.out" }, B * 4);
+    // the text drops away and the dot swells into a disc, then opens into construction rings
+    tl.to("#dt-text", { opacity: 0, duration: 0.12 }, B * 5 - 0.12);
+    tl.to("#dt-dot", { opacity: 0, duration: 0.01 }, B * 5);
+    tl.fromTo("#dt-big", { scale: 34 / 420 }, { scale: 1, duration: 0.42, ease: "expo.out" }, B * 5);
+    tl.fromTo("#dt-big", { opacity: 0 }, { opacity: 1, duration: 0.01 }, B * 5);
+    tl.to("#dt-big", { opacity: 0, duration: 0.01 }, B * 6);
+    tl.to("#dt-rings", { opacity: 1, duration: 0.01 }, B * 6);
+    tl.fromTo("#dt-r1", { attr: { r: 210 } }, { attr: { r: 250 }, duration: B * 1.6, ease: "power2.out" }, B * 6);
+    tl.fromTo("#dt-r2", { attr: { r: 20 } }, { attr: { r: 64 }, duration: B, ease: "expo.out" }, B * 6);
+    tl.to("#dt-h", { attr: { "stroke-dashoffset": 0 }, duration: B * 0.8, ease: "power2.out" }, B * 6.2);
+    // everything collapses to a small dot that slides right, ready for the next scene
+    tl.to(["#dt-r1", "#dt-r2"], { attr: { r: 7 }, duration: 0.28, ease: "power3.in" }, B * 7.3);
+    tl.to("#dt-h", { opacity: 0, duration: 0.15 }, B * 7.3);
+    window.__timelines["dot"] = tl;
+  </script>
+</template>

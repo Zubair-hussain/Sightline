@@ -1,0 +1,56 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: Inter, sans-serif; color: #fff;
+      background: radial-gradient(circle at 24% 64%, rgba(0, 102, 204, 0.55), rgba(0, 102, 204, 0) 52%),
+        radial-gradient(circle at 78% 32%, rgba(110, 80, 255, 0.5), rgba(110, 80, 255, 0) 50%), #070f2e; }
+    #kn-wrap { position: absolute; inset: 0; perspective: 1400px; }
+    #kn-head { position: absolute; left: 0; right: 0; top: 470px; text-align: center; font-size: 116px; font-weight: 700; letter-spacing: -0.035em; white-space: nowrap; }
+    .kn-l { display: inline-block; }
+    .kn-acc { color: #2997ff; }
+    .kn-dot { display: inline-block; color: #2997ff; opacity: 0; }
+    .kn-lab { position: absolute; font-size: 44px; font-weight: 600; letter-spacing: -0.02em; display: flex; align-items: center; gap: 14px; opacity: 0; white-space: nowrap; }
+    .kn-lab svg { width: 34px; height: 34px; }
+    .kn-far { font-size: 34px; color: rgba(255, 255, 255, 0.7); }
+  </style>
+  <div id="root" data-composition-id="kinetic" data-width="1920" data-height="1080">
+    <div id="kn-wrap">
+      <div id="kn-head"></div>
+      <div class="kn-lab" id="kn-l0" style="left:250px;top:250px"><svg viewBox="0 0 100 100"><path d="M50 0C54 30 70 46 100 50C70 54 54 70 50 100C46 70 30 54 0 50C30 46 46 30 50 0Z" fill="#fff"/></svg>SEO</div>
+      <div class="kn-lab" id="kn-l1" style="left:1360px;top:220px"><svg viewBox="0 0 100 100"><path d="M50 0C54 30 70 46 100 50C70 54 54 70 50 100C46 70 30 54 0 50C30 46 46 30 50 0Z" fill="#fff"/></svg>Lighthouse</div>
+      <div class="kn-lab kn-far" id="kn-l2" style="left:120px;top:720px"><svg viewBox="0 0 100 100"><path d="M50 0C54 30 70 46 100 50C70 54 54 70 50 100C46 70 30 54 0 50C30 46 46 30 50 0Z" fill="#fff"/></svg>Broken links</div>
+      <div class="kn-lab" id="kn-l3" style="left:1430px;top:760px"><svg viewBox="0 0 100 100"><path d="M50 0C54 30 70 46 100 50C70 54 54 70 50 100C46 70 30 54 0 50C30 46 46 30 50 0Z" fill="#fff"/></svg>Memory leaks</div>
+      <div class="kn-lab kn-far" id="kn-l4" style="left:780px;top:170px"><svg viewBox="0 0 100 100"><path d="M50 0C54 30 70 46 100 50C70 54 54 70 50 100C46 70 30 54 0 50C30 46 46 30 50 0Z" fill="#fff"/></svg>iPhone &amp; iPad</div>
+      <div class="kn-lab kn-far" id="kn-l5" style="left:830px;top:860px"><svg viewBox="0 0 100 100"><path d="M50 0C54 30 70 46 100 50C70 54 54 70 50 100C46 70 30 54 0 50C30 46 46 30 50 0Z" fill="#fff"/></svg>Cloudflare</div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    // build the headline letter by letter (static markup would need 21 spans; built once, deterministically)
+    const head = document.getElementById("kn-head");
+    const words = [["Sightline", ""], ["is", ""], ["auditing", "kn-acc"]];
+    const letters = [];
+    words.forEach(([w, cls], wi) => {
+      for (const ch of w) { const s = document.createElement("span"); s.className = "kn-l " + cls; s.textContent = ch; head.appendChild(s); letters.push(s); }
+      if (wi < words.length - 1) head.appendChild(document.createTextNode(" "));
+    });
+    const dots = [];
+    for (let i = 0; i < 3; i++) { const d = document.createElement("span"); d.className = "kn-dot"; d.textContent = "."; head.appendChild(d); dots.push(d); }
+
+    tl.fromTo(letters, { opacity: 0, y: 70, rotationX: -70, transformPerspective: 900, filter: "blur(12px)", transformOrigin: "50% 100%" },
+      { opacity: 1, y: 0, rotationX: 0, transformPerspective: 900, filter: "blur(0px)", duration: 0.55, ease: "expo.out", stagger: 0.028 }, 0.08);
+    dots.forEach((d, i) => tl.to(d, { opacity: 1, duration: 0.08 }, 0.95 + i * 0.18));
+    // sparkle labels blur in at different depths (ref 2), far ones stay slightly soft
+    const labs = ["#kn-l0", "#kn-l1", "#kn-l4", "#kn-l3", "#kn-l2", "#kn-l5"];
+    labs.forEach((id, i) => {
+      const far = document.querySelector(id).classList.contains("kn-far");
+      tl.fromTo(id, { opacity: 0, scale: 0.8, filter: "blur(16px)" }, { opacity: far ? 0.75 : 1, scale: 1, filter: far ? "blur(1.5px)" : "blur(0px)", duration: 0.5, ease: "expo.out" }, 0.45 + i * 0.13);
+    });
+    // labels part slightly outward (one move each, then hold)
+    tl.to(["#kn-l0", "#kn-l2"], { x: -40, duration: 1.6, ease: "power2.inOut" }, 1.2);
+    tl.to(["#kn-l1", "#kn-l3"], { x: 40, duration: 1.6, ease: "power2.inOut" }, 1.2);
+    // whip out to the left into the 3D scene
+    tl.to("#kn-wrap", { x: -320, opacity: 0, filter: "blur(18px)", duration: 0.35, ease: "power3.in" }, 2.95);
+    window.__timelines["kinetic"] = tl;
+  </script>
+</template>

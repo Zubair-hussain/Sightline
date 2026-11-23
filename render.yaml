@@ -1,4 +1,4 @@
-# One-click deploy of the Sightline website + web app on Render.
+# Node API replica; the public frontend lives on Cloudflare.
 # https://render.com/deploy?repo=https://github.com/Zubair-hussain/Sightline
 services:
   - type: web
@@ -7,6 +7,10 @@ services:
     plan: free
     healthCheckPath: /healthz
     envVars:
+      - key: SIGHTLINE_API_ONLY
+        value: "1"
+      - key: SIGHTLINE_ORIGIN_SECRET
+        sync: false
       - key: SIGHTLINE_RELEASES_URL
         value: https://github.com/Zubair-hussain/Sightline/releases/latest/download
       - key: SIGHTLINE_TRUST_PROXY

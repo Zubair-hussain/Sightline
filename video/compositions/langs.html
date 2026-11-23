@@ -1,0 +1,32 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #ffffff; color: #000;
+      font-family: Inter, "Noto Sans JP", sans-serif; }
+    .lg-l { position: absolute; font-size: 54px; font-weight: 500; letter-spacing: -0.02em; white-space: nowrap; line-height: 1.2; }
+    .lg-l span { color: #8e8e93; margin-left: 26px; font-size: 40px; }
+    #lg-tag { position: absolute; left: 120px; top: 860px; font-size: 96px; font-weight: 700; letter-spacing: -0.04em; }
+    #lg-tag .acc { color: #0066cc; }
+  </style>
+  <div id="root" data-composition-id="langs" data-width="1920" data-height="1080">
+    <div id="lg-tag">14 languages. <span class="acc">Yours too.</span></div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const B = 0.448;
+    // the app's own "What Sightline checks" title in each of its languages (renderer/src/i18n.ts)
+    const L = [["What Sightline checks", "English"], ["Qué revisa Sightline", "Español"], ["Ce que vérifie Sightline", "Français"],
+      ["Was Sightline prüft", "Deutsch"], ["Что проверяет Sightline", "Русский"], ["Sightline がチェックすること", "日本語"],
+      ["Sightline이 확인하는 것", "한국어"], ["Sightline 检查什么", "简体中文"], ["Sightline क्या जाँचता है", "हिन्दी"], ["ما الذي يفحصه Sightline", "العربية"]];
+    const root = document.getElementById("root");
+    L.forEach(([t, n], i) => {
+      const d = document.createElement("div"); d.className = "lg-l"; d.id = "lg-l" + i;
+      d.style.right = 120 + i * 62 + "px"; d.style.top = 70 + i * 76 + "px";
+      d.innerHTML = t + "<span>" + n + "</span>";
+      root.appendChild(d);
+      tl.fromTo("#lg-l" + i, { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.3, ease: "expo.out" }, i * B * 0.5);
+    });
+    tl.fromTo("#lg-tag", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, B * 5);
+    window.__timelines["langs"] = tl;
+  </script>
+</template>

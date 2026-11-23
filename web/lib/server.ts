@@ -21,6 +21,10 @@ export const slots = {
 
 /** Client IP: trusted proxy headers on Vercel or when SIGHTLINE_TRUST_PROXY is set. */
 export function clientIp(req: Request): string {
+  const secret = process.env.SIGHTLINE_ORIGIN_SECRET;
+  if (secret && req.headers.get('x-sightline-origin-key') === secret) {
+    return req.headers.get('x-sightline-client-ip') || 'router';
+  }
   const trust = Boolean(process.env.VERCEL || process.env.SIGHTLINE_TRUST_PROXY);
   const fwd = trust ? (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() : '';
   return fwd || req.headers.get('x-real-ip') || 'local';

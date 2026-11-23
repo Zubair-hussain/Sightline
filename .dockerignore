@@ -3,3 +3,10 @@ out
 dist
 renderer/dist
 .git
+web/node_modules
+web/.next
+web/public/app
+video
+deploy/cloudflare/node_modules
+deploy/cloudflare/public
+deploy/cloudflare/.wrangler

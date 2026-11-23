@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Sightline logo</title>
+  <desc id="desc">A blue audit ring, white check mark, and magnifying-glass handle on a dark rounded square.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2a2c"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+  </defs>
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#bg)"/>
+  <circle cx="470" cy="470" r="230" fill="none" stroke="#3a3a3c" stroke-width="56"/>
+  <circle cx="470" cy="470" r="230" fill="none" stroke="#2997ff" stroke-width="56" stroke-linecap="round"
+          stroke-dasharray="1083 1445" transform="rotate(-90 470 470)"/>
+  <path d="M640 640 L800 800" stroke="#ffffff" stroke-width="72" stroke-linecap="round"/>
+  <path d="M385 478 L445 538 L565 410" fill="none" stroke="#ffffff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

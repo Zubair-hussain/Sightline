@@ -1,0 +1,54 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; font-family: Inter, sans-serif; color: #ffffff; }
+    #s6-lockup { position: absolute; left: 0; right: 0; top: 150px; display: flex; align-items: center; justify-content: center; gap: 28px; }
+    #s6-logo { width: 190px; height: 190px; display: block; }
+    #s6-wordwrap { overflow: hidden; }
+    #s6-word { font-size: 104px; font-weight: 700; letter-spacing: -0.035em; }
+    #s6-head { position: absolute; left: 0; right: 0; top: 440px; text-align: center; font-size: 124px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.05; }
+    .s6acc { color: #2997ff; }
+    #s6-sub { position: absolute; left: 0; right: 0; top: 618px; text-align: center; font-size: 38px; font-weight: 500; letter-spacing: -0.01em; color: #c7c7cc; }
+    #s6-btn { position: absolute; left: 0; right: 0; top: 735px; display: flex; justify-content: center; }
+    #s6-btnin { padding: 26px 64px; border-radius: 999px; background: #0066cc; font-size: 40px; font-weight: 600; letter-spacing: -0.01em;
+      box-shadow: 0 0 0 1px rgba(41, 151, 255, 0.5), 0 20px 70px rgba(41, 151, 255, 0.45); }
+    #s6-repo { position: absolute; left: 0; right: 0; top: 880px; text-align: center; font-size: 30px; color: #98989d; letter-spacing: 0; }
+  </style>
+  <div id="root" data-composition-id="s6" data-width="1920" data-height="1080">
+    <div id="s6-lockup">
+      <svg id="s6-logo" viewBox="0 0 1024 1024" role="img" aria-label="Sightline logo">
+        <defs>
+          <linearGradient id="s6-bg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2a2a2c" />
+            <stop offset="1" stop-color="#000000" />
+          </linearGradient>
+        </defs>
+        <rect id="s6-tile" x="64" y="64" width="896" height="896" rx="200" fill="url(#s6-bg)" />
+        <circle id="s6-track" cx="470" cy="470" r="230" fill="none" stroke="#3a3a3c" stroke-width="56" />
+        <circle id="s6-ring" cx="470" cy="470" r="230" fill="none" stroke="#2997ff" stroke-width="56" stroke-linecap="round" stroke-dasharray="0 1445" transform="rotate(-90 470 470)" />
+        <path id="s6-handle" d="M640 640 L800 800" stroke="#ffffff" stroke-width="72" stroke-linecap="round" stroke-dasharray="227" stroke-dashoffset="227" />
+        <path id="s6-check" d="M385 478 L445 538 L565 410" fill="none" stroke="#ffffff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="262" stroke-dashoffset="262" />
+      </svg>
+      <div id="s6-wordwrap"><div id="s6-word">Sightline</div></div>
+    </div>
+    <div id="s6-head">Every detail. <span class="s6acc">Audited.</span></div>
+    <div id="s6-sub">Free &amp; open source · Windows · macOS · Linux</div>
+    <div id="s6-btn"><div id="s6-btnin">Download</div></div>
+    <div id="s6-repo">github.com/Zubair-hussain/Sightline</div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    // The mark performs itself: tile lands, the audit ring fills like a score, the check draws, the handle strokes in.
+    tl.fromTo("#s6-logo", { scale: 0.7, opacity: 0, transformOrigin: "50% 50%" }, { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.3)" }, 0.35);
+    tl.fromTo("#s6-track", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.55);
+    tl.fromTo("#s6-ring", { attr: { "stroke-dasharray": "0 1445" } }, { attr: { "stroke-dasharray": "1083 1445" }, duration: 0.75, ease: "power2.inOut" }, 0.65);
+    tl.fromTo("#s6-check", { attr: { "stroke-dashoffset": 262 } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.35, ease: "power3.out" }, 1.3);
+    tl.fromTo("#s6-handle", { attr: { "stroke-dashoffset": 227 } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.3, ease: "power3.out" }, 1.45);
+    tl.fromTo("#s6-word", { x: -140, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: "expo.out" }, 1.35);
+    tl.fromTo("#s6-head", { opacity: 0, filter: "blur(12px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 1.85);
+    tl.fromTo("#s6-sub", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "expo.out" }, 2.35);
+    tl.fromTo("#s6-btnin", { opacity: 0, scale: 0.9, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, 2.65);
+    tl.fromTo("#s6-repo", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 2.8);
+    window.__timelines["s6"] = tl;
+  </script>
+</template>
