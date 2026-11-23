@@ -1,0 +1,70 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: Inter, sans-serif; color: #1d1d1f;
+      background: radial-gradient(circle at 18% 80%, rgba(0, 102, 204, 0.22), rgba(0, 102, 204, 0) 45%),
+        radial-gradient(circle at 85% 15%, rgba(168, 85, 247, 0.2), rgba(168, 85, 247, 0) 45%), linear-gradient(160deg, #e9ecff, #f6efff 55%, #e7f3ff); }
+    #sc-title { position: absolute; left: 0; right: 0; top: 92px; text-align: center; font-size: 84px; font-weight: 700; letter-spacing: -0.035em; }
+    #sc-title .acc { color: #0066cc; }
+    #sc-card { position: absolute; left: 260px; top: 270px; width: 1400px; height: 680px; }
+    #sc-glass { position: absolute; inset: 0; border-radius: 40px; background: rgba(255, 255, 255, 0.62);
+      backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%);
+      border: 1.5px solid rgba(255, 255, 255, 0.9); box-shadow: 0 40px 100px rgba(40, 40, 120, 0.18); }
+    #sc-head { position: absolute; left: 64px; top: 50px; right: 64px; display: flex; justify-content: space-between; align-items: center; }
+    #sc-head .t { font-size: 38px; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 14px; }
+    #sc-head .chip { font-size: 26px; font-weight: 500; color: #3a3a3c; padding: 10px 22px; border-radius: 999px; background: rgba(0, 0, 0, 0.05); }
+    #sc-gauges { position: absolute; left: 64px; right: 64px; top: 150px; display: flex; justify-content: space-between; }
+    .sc-g { width: 290px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .sc-g svg { width: 230px; height: 230px; }
+    .sc-g .lbl { font-size: 30px; font-weight: 600; }
+    .sc-num { font-family: Inter, sans-serif; font-size: 68px; font-weight: 700; }
+    #sc-chips { position: absolute; left: 64px; right: 64px; top: 520px; display: flex; gap: 18px; }
+    .sc-chip { flex: 1; display: flex; align-items: center; gap: 14px; padding: 20px 22px; border-radius: 22px; background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(0, 0, 0, 0.06); }
+    .sc-chip i { width: 14px; height: 14px; border-radius: 50%; flex: none; }
+    .sc-chip b { font-size: 30px; font-weight: 700; display: block; }
+    .sc-chip span { font-size: 24px; color: #6e6e73; }
+  </style>
+  <div id="root" data-composition-id="scores" data-width="1920" data-height="1080">
+    <div id="sc-title">Scored like <span class="acc">Lighthouse.</span></div>
+    <div id="sc-card">
+      <div id="sc-glass"></div>
+      <div id="sc-head"><div class="t"><svg width="34" height="34" viewBox="0 0 100 100"><path d="M50 0C54 30 70 46 100 50C70 54 54 70 50 100C46 70 30 54 0 50C30 46 46 30 50 0Z" fill="#0066cc"/></svg>Lighthouse-style scores</div><div class="chip">Mobile · Slow 4G · 4× CPU</div></div>
+      <div id="sc-gauges"></div>
+      <div id="sc-chips">
+        <div class="sc-chip"><i style="background:#ff9f0a"></i><div><b>2.5 s</b><span>First Contentful Paint</span></div></div>
+        <div class="sc-chip"><i style="background:#ff9f0a"></i><div><b>2.5 s</b><span>Largest Contentful Paint</span></div></div>
+        <div class="sc-chip"><i style="background:#ff453a"></i><div><b>1.54 s</b><span>Total Blocking Time</span></div></div>
+        <div class="sc-chip"><i style="background:#30d158"></i><div><b>0</b><span>Layout Shift</span></div></div>
+        <div class="sc-chip"><i style="background:#30d158"></i><div><b>2.6 s</b><span>Speed Index</span></div></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    // real scores from the audit
+    const G = [["Performance", 68], ["Accessibility", 93], ["Best Practices", 64], ["SEO", 100]];
+    const col = (v) => (v >= 90 ? "#1f9d55" : v >= 50 ? "#c77700" : "#d93025");
+    const host = document.getElementById("sc-gauges");
+    const C = 2 * Math.PI * 95;
+    G.forEach(([name, v], i) => {
+      const g = document.createElement("div"); g.className = "sc-g";
+      g.innerHTML = '<svg viewBox="0 0 230 230"><circle cx="115" cy="115" r="95" fill="none" stroke="rgba(0,0,0,.08)" stroke-width="16"/>' +
+        '<circle id="sc-arc' + i + '" cx="115" cy="115" r="95" fill="none" stroke="' + col(v) + '" stroke-width="16" stroke-linecap="round" stroke-dasharray="0 ' + C + '" transform="rotate(-90 115 115)"/>' +
+        '<text id="sc-n' + i + '" x="115" y="138" text-anchor="middle" class="sc-num" fill="' + col(v) + '">0</text></svg><div class="lbl">' + name + "</div>";
+      host.appendChild(g);
+      const st = { v: 0 };
+      const at = 0.8 + i * 0.16;
+      tl.to(st, { v, duration: 1.0, ease: "power2.out", onUpdate: () => {
+        document.getElementById("sc-arc" + i).setAttribute("stroke-dasharray", (C * st.v) / 100 + " " + C);
+        document.getElementById("sc-n" + i).textContent = Math.round(st.v);
+      } }, at);
+    });
+    // a loading bar morphs into the glass panel (reference 2)
+    tl.fromTo("#sc-glass", { scaleX: 0.22, scaleY: 0.02, borderRadius: 999 }, { scaleX: 1, scaleY: 1, borderRadius: 40, duration: 0.6, ease: "power3.inOut" }, 0.05);
+    tl.fromTo("#sc-title", { opacity: 0, filter: "blur(12px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "expo.out" }, 0.25);
+    tl.fromTo(["#sc-head", ".sc-g"], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out", stagger: 0.08 }, 0.55);
+    tl.fromTo(".sc-chip", { opacity: 0, scale: 0.85, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "back.out(1.6)", stagger: 0.07 }, 2.0);
+    tl.to(["#sc-card", "#sc-title"], { opacity: 0, filter: "blur(10px)", duration: 0.25, ease: "power2.in" }, 4.1);
+    window.__timelines["scores"] = tl;
+  </script>
+</template>
