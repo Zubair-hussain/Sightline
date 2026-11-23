@@ -16,7 +16,7 @@
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["AuditRouter"] }],
   "triggers": { "crons": ["*/5 * * * *"] },
   "vars": {
-    "BACKENDS": "[]",
+    "BACKENDS": "[{\"name\":\"vercel-1\",\"url\":\"https://sightline-api-1.vercel.app\",\"weight\":1,\"maxInFlight\":3},{\"name\":\"vercel-2\",\"url\":\"https://sightline-api-2.vercel.app\",\"weight\":1,\"maxInFlight\":3}]",
     "RATE_PER_HOUR": "20",
     "HEADER_TIMEOUT_MS": "8000",
     "HEALTH_TIMEOUT_MS": "3000",
