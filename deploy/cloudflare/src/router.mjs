@@ -120,7 +120,7 @@ export class AuditRouter {
     const entries = await this.state.storage.list({ prefix: 'rate:' });
     const expired = [];
     for (const [key, value] of entries) if (Date.now() - value.at > 3_600_000) expired.push(key);
-    if (expired.length) await this.state.storage.delete(expired);
+    for (let i = 0; i < expired.length; i += 128) await this.state.storage.delete(expired.slice(i, i + 128));
     if (entries.size > expired.length) await this.state.storage.setAlarm(Date.now() + 3_600_000);
   }
 
