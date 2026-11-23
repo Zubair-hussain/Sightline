@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sightline",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-11-23",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "404-page"
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "ROUTER", "class_name": "AuditRouter" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["AuditRouter"] }],
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "vars": {
+    "BACKENDS": "[]",
+    "RATE_PER_HOUR": "20",
+    "HEADER_TIMEOUT_MS": "8000",
+    "HEALTH_TIMEOUT_MS": "3000",
+    "HEALTH_TTL_MS": "30000",
+    "FAILURE_COOLDOWN_MS": "30000"
+  },
+  "observability": { "enabled": true }
+}
