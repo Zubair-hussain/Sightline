@@ -1,0 +1,28 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #ffffff; font-family: Inter, sans-serif; color: #000; }
+    .wt-row { position: absolute; left: 0; width: 1920px; height: 150px; font-size: 128px; letter-spacing: -0.04em; line-height: 150px; }
+    .wt-l { position: absolute; right: 1000px; white-space: nowrap; }
+    .wt-r { position: absolute; left: 1040px; white-space: nowrap; }
+    .wt-r.acc { color: #0066cc; }
+  </style>
+  <div id="root" data-composition-id="weights" data-width="1920" data-height="1080"></div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const B = 0.448;
+    const ROWS = [[300, "Checks"], [400, "Scores"], [500, "Explains"], [700, "Tests"], [900, "Launches"]];
+    const root = document.getElementById("root");
+    ROWS.forEach(([w, word], i) => {
+      const r = document.createElement("div"); r.className = "wt-row"; r.style.top = 160 + i * 152 + "px"; r.style.fontWeight = w;
+      r.innerHTML = '<div class="wt-l" id="wt-l' + i + '">Sightline</div><div class="wt-r' + (i === 4 ? " acc" : "") + '" id="wt-r' + i + '">' + word + "</div>";
+      root.appendChild(r);
+      // both halves grow outward from the centre gap, one row per beat
+      tl.fromTo("#wt-l" + i, { clipPath: "inset(0 0 0 100%)" }, { clipPath: "inset(0 0 0 0%)", duration: 0.42, ease: "power3.out" }, i * B);
+      tl.fromTo("#wt-r" + i, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.42, ease: "power3.out" }, i * B + 0.06);
+    });
+    // the stack slides up and away on the last beat
+    tl.to(".wt-row", { y: -60, opacity: 0, duration: 0.28, ease: "power3.in", stagger: 0.03 }, B * 7 - 0.1);
+    window.__timelines["weights"] = tl;
+  </script>
+</template>
