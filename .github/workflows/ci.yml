@@ -86,3 +86,34 @@ jobs:
             curl -s -X POST localhost:3000/api/audit -H 'content-type: application/json' -d "{\"url\":\"$u\"}" | grep -q Blocked || { echo "SSRF not blocked: $u"; exit 1; }
           done
           echo "Website checks OK"
+
+  edge:
+    name: Cloudflare frontend and custom router
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SITE_URL: https://sightline.example.com
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            deploy/cloudflare/package-lock.json
+      - run: npm ci --prefix web
+      - run: npm ci --prefix deploy/cloudflare
+      - run: npm test --prefix deploy/cloudflare
+      - run: npm run build --prefix deploy/cloudflare
+      - run: npm run check --prefix deploy/cloudflare
+      - name: API replica isolation and readiness
+        shell: bash
+        run: |
+          SIGHTLINE_API_ONLY=1 SIGHTLINE_ORIGIN_SECRET=ci-test-key npm --prefix web start -- -p 3000 &
+          for i in {1..30}; do curl -fsS localhost:3000/healthz && break; sleep 1; done
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:3000/)" = 404
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:3000/app/)" = 404
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:3000/api/config)" = 401
+          curl -fsS localhost:3000/healthz | grep -q sightline-api
+          curl -s -X POST localhost:3000/api/audit -H 'content-type: application/json' -H 'x-sightline-origin-key: ci-test-key' -d '{"url":"http://127.0.0.1"}' | grep -q Blocked
