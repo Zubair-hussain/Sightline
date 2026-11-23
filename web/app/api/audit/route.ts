@@ -19,7 +19,13 @@ export async function POST(req: Request): Promise<Response> {
   if (!body.url || typeof body.url !== 'string') return json({ error: 'url is required' }, 400);
   const modules = (Array.isArray(body.modules) ? body.modules : ALL_MODULES)
     .filter((m): m is SL.CategoryKey => ALL_MODULES.includes(m as SL.CategoryKey) && !BROWSER_MODULES.includes(m as SL.CategoryKey));
-  if (!slots.take()) return json({ error: 'The server is busy. Please try again in a minute.' }, 503);
+  if (!slots.take()) {
+    return Response.json({ error: 'The server is busy. Please try again in a minute.' }, {
+      status: 503,
+      // The router may try another replica only before an audit has started.
+      headers: { 'cache-control': 'no-store', 'retry-after': '5', 'x-sightline-retryable': '1' },
+    });
+  }
 
   const signal = { cancelled: false };
   req.signal.addEventListener('abort', () => { signal.cancelled = true; });
