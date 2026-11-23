@@ -1,0 +1,44 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; font-family: Inter, sans-serif; color: #1d1d1f; }
+    #s3-cap { position: absolute; left: 0; right: 0; top: 104px; text-align: center; font-size: 46px; font-weight: 700; letter-spacing: -0.025em; }
+    #s3-cap2 { position: absolute; left: 0; right: 0; top: 104px; text-align: center; font-size: 46px; font-weight: 700; letter-spacing: -0.025em; }
+    .s3acc { color: #0066cc; }
+    #s3-cap2 { opacity: 0; }
+    #s3-win { position: absolute; left: 280px; top: 170px; width: 1360px; height: 849px; border-radius: 28px; overflow: hidden; background: #000;
+      box-shadow: 0 40px 120px rgba(0, 0, 0, 0.28); }
+    #s3-win img { position: absolute; left: 0; top: 0; width: 1360px; height: 849px; display: block; }
+    #s3-runwrap { position: absolute; inset: 0; clip-path: circle(0px at 971px 376px); }
+    #s3-runimg { position: absolute; inset: 0; }
+    #s3-cursor { position: absolute; left: 0; top: 0; width: 76px; height: 76px; z-index: 20; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35)); }
+  </style>
+  <div id="root" data-composition-id="s3" data-width="1920" data-height="1080">
+    <div id="s3-cap">Paste a link. Press <span class="s3acc">Audit.</span></div>
+    <div id="s3-cap2">Ten audits, <span class="s3acc">running.</span></div>
+    <div id="s3-win">
+      <img src="assets/home.jpg" alt="Sightline home screen" />
+      <div id="s3-runwrap"><div id="s3-runimg"><img src="assets/running.jpg" alt="Sightline running an audit" /></div></div>
+    </div>
+    <svg id="s3-cursor" viewBox="0 0 100 100" aria-hidden="true"><path d="M14 8L14 78L33 62L47 92L62 85L48 56L74 54Z" fill="#ffffff" stroke="#1d1d1f" stroke-width="4" stroke-linejoin="round" /></svg>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#s3-win", { y: 520, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: "expo.out" }, 0);
+    tl.fromTo("#s3-cap", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 0.35);
+    // cursor enters from off-screen, travels to the Audit button (tip at 1251, 546) and clicks
+    tl.fromTo("#s3-cursor", { x: 2100, y: 1150, scale: 1 }, { x: 1240, y: 540, duration: 0.9, ease: "power3.inOut" }, 1.3);
+    tl.to("#s3-cursor", { scale: 0.86, duration: 0.09, ease: "power2.out", transformOrigin: "14% 8%" }, 2.3);
+    tl.to("#s3-cursor", { scale: 1, duration: 0.14, ease: "power2.out" }, 2.39);
+    // the click opens the running screen from the click point
+    tl.to("#s3-runwrap", { clipPath: "circle(1800px at 971px 376px)", duration: 0.6, ease: "power2.inOut" }, 2.35);
+    tl.to("#s3-cursor", { opacity: 0, duration: 0.2, ease: "power2.in" }, 3.0);
+    tl.to("#s3-cap", { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power2.in" }, 2.9);
+    tl.fromTo("#s3-cap2", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 3.15);
+    // push toward the ring, then leave
+    tl.fromTo("#s3-runimg", { scale: 1, transformOrigin: "49% 30%" }, { scale: 1.45, duration: 1.0, ease: "power3.inOut" }, 3.4);
+    tl.to("#s3-win", { opacity: 0, y: -40, duration: 0.3, ease: "power2.in" }, 6.1);
+    tl.to("#s3-cap2", { opacity: 0, filter: "blur(8px)", duration: 0.25, ease: "power2.in" }, 6.1);
+    window.__timelines["s3"] = tl;
+  </script>
+</template>
