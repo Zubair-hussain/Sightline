@@ -1,0 +1,42 @@
+name: Deploy Netlify API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - 'src/engine/**'
+      - 'renderer/**'
+      - 'types/**'
+      - 'package*.json'
+      - 'netlify.toml'
+      - '.github/workflows/netlify.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: netlify-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+      NETLIFY_SITE_ID: 2c0f0dab-5f40-4844-bcdc-234ea5eb8179
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build and deploy on Linux
+        run: npx --yes netlify-cli@27.20.1 deploy --prod --context production --site "$NETLIFY_SITE_ID" --message "$GITHUB_SHA"
+      - name: Verify API readiness and isolation
+        run: |
+          curl --fail --retry 5 --retry-all-errors --retry-delay 5 https://sightline-api.netlify.app/healthz | grep -q sightline-api
+          test "$(curl -s -o /dev/null -w '%{http_code}' https://sightline-api.netlify.app/api/config)" = 401
