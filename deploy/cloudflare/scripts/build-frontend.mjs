@@ -7,7 +7,7 @@ const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const root = path.resolve(project, '../..');
 const web = path.join(root, 'web');
 const output = path.join(project, 'public');
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://sightaud.com';
 if (!siteUrl || !/^https:\/\//.test(siteUrl)) throw new Error('Set NEXT_PUBLIC_SITE_URL to your public Cloudflare HTTPS URL before building.');
 
 // Reuse the existing Next build, including its pre-rendered homepage and client hydration.
@@ -17,7 +17,7 @@ const npmCli = process.env.npm_execpath;
 if (!npmCli) throw new Error('Run this script through npm run build.');
 const result = spawnSync(process.execPath, [npmCli, '--prefix', web, 'run', 'build'], {
   cwd: root, stdio: 'inherit',
-  env: { ...process.env, SIGHTLINE_EDGE_BUILD: '1', SIGHTLINE_API_ONLY: '0', NEXT_TELEMETRY_DISABLED: '1' },
+  env: { ...process.env, NEXT_PUBLIC_SITE_URL: siteUrl, SIGHTLINE_EDGE_BUILD: '1', SIGHTLINE_API_ONLY: '0', NEXT_TELEMETRY_DISABLED: '1' },
 });
 if (result.status !== 0) process.exit(result.status || 1);
 
