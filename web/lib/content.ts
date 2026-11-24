@@ -1,6 +1,6 @@
 /** Landing-page content. */
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://sightaud.com').replace(/\/$/, '');
 export const REPO_URL = 'https://github.com/Zubair-hussain/Sightline';
 
 export interface Feature { name: string; desc: string; app?: boolean }
