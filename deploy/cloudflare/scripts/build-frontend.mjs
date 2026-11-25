@@ -13,6 +13,9 @@ if (!siteUrl || !/^https:\/\//.test(siteUrl)) throw new Error('Set NEXT_PUBLIC_S
 // Reuse the existing Next build, including its pre-rendered homepage and client hydration.
 // No audit engine or API server is uploaded to Cloudflare.
 // Invoke npm through its JS entry point when available (also works with Windows paths).
+// Next caches fetch() results (Blogger posts for 10 minutes) between builds. A deploy must publish
+// what Blogger has now, so start every build without that cache.
+await rm(path.join(web, '.next/cache/fetch-cache'), { recursive: true, force: true });
 const npmCli = process.env.npm_execpath;
 if (!npmCli) throw new Error('Run this script through npm run build.');
 const result = spawnSync(process.execPath, [npmCli, '--prefix', web, 'run', 'build'], {
