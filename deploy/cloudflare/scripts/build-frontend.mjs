@@ -33,14 +33,14 @@ for (const file of ['robots.txt', 'sitemap.xml']) {
   await cp(path.join(web, '.next/server/app', `${file}.body`), path.join(output, file));
 }
 // Blog: the index and every post pre-rendered from the Blogger API at build time.
-// Cloudflare serves /blog from blog.html and /blog/2026/11/post from blog/2026/11/post.html.
+// Cloudflare serves /blogs from blogs.html and /blogs/2026/11/post from blogs/2026/11/post.html.
 const appDir = path.join(web, '.next/server/app');
-await cp(path.join(appDir, 'blog.html'), path.join(output, 'blog.html'));
+await cp(path.join(appDir, 'blogs.html'), path.join(output, 'blogs.html'));
 let posts = 0;
-for (const entry of await readdir(path.join(appDir, 'blog'), { recursive: true }).catch(() => [])) {
+for (const entry of await readdir(path.join(appDir, 'blogs'), { recursive: true }).catch(() => [])) {
   if (!/^\d{4}[\\/]\d{2}[\\/][^\\/]+\.html$/.test(entry)) continue;
-  await mkdir(path.dirname(path.join(output, 'blog', entry)), { recursive: true });
-  await cp(path.join(appDir, 'blog', entry), path.join(output, 'blog', entry));
+  await mkdir(path.dirname(path.join(output, 'blogs', entry)), { recursive: true });
+  await cp(path.join(appDir, 'blogs', entry), path.join(output, 'blogs', entry));
   posts++;
 }
 console.log(`Blog: ${posts} post page(s)${process.env.BLOGGER_API_KEY ? '' : ' (BLOGGER_API_KEY not set, so the blog shows its empty state)'}`);
