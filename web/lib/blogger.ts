@@ -61,10 +61,28 @@ function resolveBlogId(): Promise<string> {
   return blogId;
 }
 
-/** Removes scripts, inline event handlers, javascript: links and non-video iframes from post HTML. */
+/**
+ * Blogger accepts whole HTML documents pasted into a post (with <head>, page-wide <style>, header, nav
+ * and footer). Rendering all of that inside our page would restyle the whole site, so keep only the
+ * article: the first <article>, else <main>, else <body>. Plain fragments are returned unchanged.
+ * Also returns the document's own meta description when it has one.
+ */
+export function articleOf(html: string): { body: string; description?: string } {
+  if (!/<(?:html|head|body|article|main)\b/i.test(html)) return { body: html };
+  const $ = cheerio.load(html);
+  const description = ($('meta[name="description"]').attr('content') || $('meta[property="og:description"]').attr('content') || '').trim();
+  const region = ['article', 'main', 'body'].map((tag) => $(tag).first()).find((r) => r.length);
+  return { body: region?.html() || '', description: description || undefined };
+}
+
+/** Removes scripts, styles, comments, inline event handlers, javascript: links and non-video iframes from post HTML. */
 export function sanitize(html: string): string {
   const $ = cheerio.load(html, null, false);
-  $('script, object, embed, form, base, meta, link').remove();
+  $('script, style, noscript, title, head, object, embed, form, base, meta, link').remove();
+  // HTML comments stay in the page source, where anyone can read them: drop them.
+  $.root().find('*').addBack().contents().filter((_, n) => n.type === 'comment').remove();
+  // The page already renders the post title as its only <h1>.
+  $('h1').each((_, el) => { $(el).replaceWith(`<h2>${$(el).html() || ''}</h2>`); });
   $('iframe').each((_, el) => {
     const src = $(el).attr('src') || '';
     if (!/^https:\/\/(www\.)?(youtube\.com|youtube-nocookie\.com|player\.vimeo\.com)\//.test(src)) $(el).remove();
@@ -98,13 +116,13 @@ export function excerpt(html: string, max = 180): string {
 export function toPost(p: ApiPost): BlogPost | undefined {
   const m = new URL(p.url).pathname.match(/^\/(\d{4})\/(\d{2})\/([^/]+?)(?:\.html)?$/);
   if (!m) return undefined;
-  const body = p.content || '';
+  const { body, description } = articleOf(p.content || '');
   const firstImg = p.images?.[0]?.url || cheerio.load(body, null, false)('img').first().attr('src');
   return {
     id: p.id, title: p.title?.trim() || 'Untitled', year: m[1], month: m[2], slug: m[3],
     published: p.published, updated: p.updated || p.published, author: p.author?.displayName || 'Sightline',
     labels: p.labels || [], image: firstImg?.startsWith('https://') ? firstImg : undefined,
-    excerpt: excerpt(body), html: sanitize(body),
+    excerpt: description ? excerpt(`<p>${description}</p>`, 300) : excerpt(body), html: sanitize(body),
   };
 }
 
