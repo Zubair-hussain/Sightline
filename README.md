@@ -9,7 +9,7 @@
 A free, open-source **website audit tool** that runs an SEO audit, Lighthouse-style scores, Core Web Vitals, accessibility checks, a broken-link check, hreflang validation, JavaScript/CSS code coverage, **memory-leak detection**, iPhone/iOS Safari testing and a Cloudflare & DNS review — in **one click**, explained in plain language.
 
 [![CI](https://github.com/Zubair-hussain/Sightline/actions/workflows/ci.yml/badge.svg)](https://github.com/Zubair-hussain/Sightline/actions/workflows/ci.yml)
-[![Deployment status](https://img.shields.io/website?url=https%3A%2F%2Fsightline.detroonshah.workers.dev%2Fhealthz&label=deployment&up_message=live&down_message=unavailable&logo=cloudflare)](https://sightline.detroonshah.workers.dev)
+[![Deployment status](https://img.shields.io/website?url=https%3A%2F%2Fsightaud.com%2Fhealthz&label=deployment&up_message=live&down_message=unavailable&logo=cloudflare)](https://sightaud.com)
 [![CodeQL](https://github.com/Zubair-hussain/Sightline/actions/workflows/codeql.yml/badge.svg)](https://github.com/Zubair-hussain/Sightline/actions/workflows/codeql.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
@@ -18,7 +18,7 @@ A free, open-source **website audit tool** that runs an SEO audit, Lighthouse-st
 
 [Download](#-download) · [Features](#-what-sightline-checks) · [Architecture](#-system-architecture) · [MCP](#-ai-apps-mcp-server) · [CLI](#-command-line-interface) · [Discussions](https://github.com/Zubair-hussain/Sightline/discussions)
 
-[Open Sightline online](https://sightline.detroonshah.workers.dev) · [Start a website audit](https://sightline.detroonshah.workers.dev/app)
+[Open Sightline online](https://sightaud.com) · [Start a website audit](https://sightaud.com/app)
 
 <img src="web/public/assets/app-report.png" alt="Sightline website audit report showing an overall score and scores for each audit category" width="860">
 
