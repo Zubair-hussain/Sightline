@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import { SITE_URL, REPO_URL } from '@/lib/content';
 import './globals.css';
 
+const ADSENSE_CLIENT = 'ca-pub-4022149996537615';
+
 const title = 'Sightline — Free website audit: SEO, Lighthouse, Core Web Vitals & more';
 const description =
   'Free, open-source website audit tool: SEO audit, Lighthouse-style scores, Core Web Vitals, accessibility, broken links, hreflang, code coverage, memory leaks, iPhone Safari and Cloudflare checks. In your browser or as a desktop app for Windows, macOS and Linux.';
@@ -47,6 +49,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* Design tokens shared with the desktop app (copied to public/app at build time). */}
         <link rel="stylesheet" href="/app/styles.css" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        {/* Google AdSense (site pages only; the /app audit tool keeps its strict self-only CSP). */}
+        <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`} crossOrigin="anonymous" />
       </head>
       <body className="platform-web site">{children}</body>
     </html>
