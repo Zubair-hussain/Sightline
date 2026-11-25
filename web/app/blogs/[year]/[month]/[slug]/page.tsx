@@ -48,7 +48,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
       <main>
         <article className="tile tile-light post">
           <div className="inner narrow">
-            <p className="post-back"><a href="/blog">← All posts</a></p>
+            <p className="post-back"><a href="/blogs">← All posts</a></p>
             <p className="post-meta"><time dateTime={post.published}>{formatDate(post.published)}</time> · {post.author}</p>
             <h1 className="display-lg post-heading">{post.title}</h1>
             {post.labels.length > 0 && <p className="post-labels">{post.labels.map((l) => <span className="badge" key={l}>{l}</span>)}</p>}
