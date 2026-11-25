@@ -1,0 +1,505 @@
+SIGHTLINE BLOG — STRUCTURE AND SEO MASTER GUIDE
+Site: https://sightaud.com/blogs
+Source blog: "Website- Audit" on Blogger — https://sightaud.blogspot.com (blog ID 5791125760760064372)
+
+This guide describes how Sightline's blog works TODAY, so writers and AI
+agents produce posts that come out right on sightaud.com. Everything in
+"What works now" matches the code in web/lib/blogger.ts and web/app/blogs/.
+
+
+==================================================
+WHAT WORKS NOW
+==================================================
+
+- Reads every PUBLISHED Blogger post through the Blogger API v3
+  (fetchBodies: true, fetchImages: true). Drafts and scheduled posts are not
+  shown. Blogger "Pages" (/p/...) are skipped.
+- Builds the blog list at /blogs, newest first, with cover image, date, up to
+  two labels and a short summary.
+- Builds one page per post at:
+    /blogs/YYYY/MM/slug
+  copied from the Blogger address. A Blogger post at
+    https://sightaud.blogspot.com/2026/11/fix-broken-links.html
+  appears at
+    https://sightaud.com/blogs/2026/11/fix-broken-links
+- Adds SEO tags to every post page automatically: browser title, meta
+  description, canonical URL, Open Graph article tags (title, description,
+  image, published and modified time, author, tags), X/Twitter card, and
+  BlogPosting structured data (JSON-LD).
+- Adds Blog structured data on /blogs.
+- Lists /blogs and every post in https://sightaud.com/sitemap.xml with its
+  last-updated date.
+- Cleans post HTML before showing it: removes <script>, <object>, <embed>,
+  <form>, <meta>, <link>, <base>, inline event handlers (onclick, onerror...),
+  javascript:/vbscript: links and every iframe except YouTube and Vimeo.
+  Images get lazy loading; external links get rel="noopener".
+- Adds an "Audit a website" call-to-action box at the end of every post.
+- Shows the site header, footer and AdSense on every blog page.
+- Publishes new posts automatically within about an hour (hourly rebuild),
+  once the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets are set in
+  GitHub. Until then a manual deploy is needed.
+
+
+==================================================
+WHERE EACH SEO VALUE COMES FROM
+==================================================
+
+Sightline does not read extra fields. Everything comes from the normal
+Blogger post:
+
+- Blogger post TITLE
+  -> visible <h1>, browser title ("<title> · Sightline"), Open Graph title,
+     X/Twitter title, BlogPosting headline.
+- First ~180 characters of the post's TEXT
+  -> meta description, Open Graph description, X/Twitter description and the
+     summary on the blog list. So the first paragraph IS the description:
+     write it as a clear answer to the reader's question.
+- First IMAGE in the post
+  -> cover on the blog list, Open Graph and X/Twitter image, BlogPosting
+     image. No image = the default Sightline share image.
+- Blogger LABELS
+  -> badges on the post, first two labels on the blog card, article:tag and
+     keywords in structured data.
+- Blogger PERMALINK (Post settings -> Permalink -> Custom permalink)
+  -> the /blogs/YYYY/MM/slug address. Set a short custom permalink BEFORE
+     publishing; changing it later changes the URL.
+- Blogger AUTHOR display name -> author on the page and in structured data.
+- Blogger PUBLISHED and UPDATED dates -> dates on the page, Open Graph and
+  structured data, and the sitemap.
+
+Not used by Sightline: Blogger's "Search description" box, custom robots
+tags, meta keywords. Fill the Blogger search description anyway if you want
+it on the blogspot copy; it does not reach sightaud.com.
+
+
+==================================================
+POST RULES (KEEP THESE OR THE PAGE BREAKS)
+==================================================
+
+- Publish the post. Drafts never appear.
+- Do NOT add your own <h1>. The page already uses the Blogger title as the
+  <h1>. Start the body with a paragraph, then use <h2> and <h3>.
+- Do NOT add your own "Audit a website" box at the end; the page adds one.
+- Avoid <style> blocks and inline style="" for layout. They are not removed
+  yet and can clash with the site design. Use plain HTML.
+- Do NOT put private notes in HTML comments (<!-- ... -->). Comments are
+  not shown on the page but they stay in the page source, which anyone can read.
+- Video: only YouTube or Vimeo embeds survive. Other iframes are removed.
+- Images: use https URLs (Blogger uploads are fine) and real alt text.
+- Links: use full https:// addresses. Link to Sightline pages with
+  https://sightaud.com/... (for example https://sightaud.com/app).
+
+
+==================================================
+NOT SUPPORTED YET
+==================================================
+
+The portfolio site (Zubair-Hussain-portfolio-) supports more. Sightline does
+NOT support these yet, so do not use them in Sightline posts:
+
+- PORTFOLIO-CONTENT comment blocks (site-only article text).
+- SEO_TITLE, OG_TITLE, TWITTER_TITLE, SEO_DESCRIPTION, OG_DESCRIPTION,
+  TWITTER_DESCRIPTION, EXCERPT, SEO_KEYWORDS, TAGS, IMAGE and SLUG fields.
+- Several languages inside one Blogger post, hreflang between translations,
+  and translation links on the article page.
+- Blogger's JSON-feed fallback when the API is unavailable.
+- Related-article suggestions.
+
+A block written in that format would simply stay hidden in a comment. Adding
+these features means porting src/lib/blog.ts and its tests from the
+portfolio project into Sightline.
+
+Translations today: publish each language as its own Blogger post with its
+own title and permalink. Each gets its own page and sitemap entry, but they
+are not linked to each other with hreflang.
+
+
+==================================================
+COPYABLE POST TEMPLATE (paste into Blogger's HTML view)
+==================================================
+
+<p>[Answer-first opening: the problem, and the main takeaway in one or two
+sentences. This paragraph becomes the search and social description.]</p>
+
+<img src="[https image URL, ideally 1200x675 or larger]" alt="[what the image shows]" />
+
+<h2>[Why this matters to the reader]</h2>
+<p>[Context, with links to credible sources.]</p>
+
+<h2>[How to check or fix it]</h2>
+<ol>
+  <li>[Step one]</li>
+  <li>[Step two]</li>
+</ol>
+<p>[Where Sightline helps, for example: "Run a free audit at
+<a href="https://sightaud.com/app">sightaud.com/app</a> to find every broken
+link on your site."]</p>
+
+<h2>[Trade-offs, limits and common mistakes]</h2>
+<p>[Honest caveats and alternatives.]</p>
+
+<h2>[What to do next]</h2>
+<p>[A clear next step and links to related Sightline posts.]</p>
+
+Before publishing:
+- Title: about 50-60 characters, says exactly what the post answers.
+- Permalink: custom, short, lowercase words with hyphens.
+- Labels: 1-3 labels from the list below.
+- First paragraph: about 140-158 characters is ideal for the description.
+
+Suggested labels (keep them consistent):
+SEO, Performance, Core Web Vitals, Accessibility, Links, Hreflang,
+Security, Cloudflare, iPhone & iPad, Memory leaks, Code coverage,
+Launch checklist, Lighthouse, AI & MCP, Sightline updates
+
+
+==================================================
+THE ULTIMATE BLOG WRITING CHEAT SHEET
+==================================================
+
+BLOG FORMATS
+- How-to guide (How to fix broken links before launch)
+- Listicle (12 launch-day checks every site needs)
+- "What is" explainer (What is hreflang?)
+- Comparison (Sightline vs Lighthouse: what each one checks)
+- Review
+- Best-of roundup (Best free website audit tools)
+- Case study (How an audit found 40 broken links)
+- Checklist (Pre-launch website checklist)
+- Template (Launch-day test plan template)
+- Opinion
+- Interview
+- News update (What's new in Sightline)
+- Original research (We audited 100 sites: here's what failed)
+
+TONES
+- Conversational
+- Expert
+- Results-driven
+- Optimistic
+- Witty
+- Casual / Gen-Z
+- Transparent
+- Formal
+
+CORE ELEMENTS
+- First-hand experience (E-E-A-T): real audits you ran, real numbers
+- Skimmable, answer-first format
+- Screenshots of real Sightline reports, diagrams and short videos
+
+INTRO TYPES
+- Answer-first (best for guides, FAQs)
+- Plot twist (best for opinion, strategy)
+- High-stakes story (best for case studies, reviews, tutorials)
+- Proprietary data (best for research from your own audits)
+
+HEADLINE TYPES
+- Contrarian: Why a 100 Lighthouse Score Can Still Hurt Your SEO
+- Case study: How We Fixed [Result] in [Time]
+- Hyper-specific resource: The Exact Checklist I Run Before Every Launch
+- Friction-killer: How to Audit a Website for Free in 2 Minutes
+- Data drop: We Audited [X] Websites. Here's What Broke Most
+- Expectation vs reality: Launching a Site: What I Checked vs What Broke
+
+CONTENT PILLARS
+- Blueprint: The Complete Guide to a Website Launch Audit
+- Counter-trend: Why Speed Scores Alone Don't Win Rankings
+- Case study: How [Site] Fixed [Problem] in [Time]
+- Toolbox: Every Free Website Audit Tool I Use
+- Failure analysis: The Broken-Link Mistake That Cost Me Traffic
+- Future forecast: How AI Search Is Changing Technical SEO
+
+ATTENTION TRIGGERS
+- Strong first line
+- Scannable subheadings
+- Short paragraphs
+- Examples or screenshots
+- Real numbers
+- Clear next step
+
+
+==================================================
+SEO MASTER PLAYBOOK — 2026 EDITION (SIGHTLINE)
+==================================================
+Purpose: instructions for a writer or AI agent producing Sightline blog posts
+that earn qualified traffic, citations, shares and new Sightline users.
+Apply the tactics that fit the post, not every tactic to every post. No
+ranking, indexing, AI citation or viral outcome is guaranteed.
+
+COMPATIBILITY CONTRACT
+- Write normal Blogger posts. Do not use PORTFOLIO-CONTENT blocks or extra
+  metadata fields; Sightline does not read them (see "Not supported yet").
+- Post URLs are /blogs/YYYY/MM/slug on https://sightaud.com. Never publish
+  guessed internal URLs; open the page and confirm it loads.
+- This guide does not change or test application code.
+
+01. ON-PAGE SEO — Make each page relevant and useful.
+Actions: one primary search intent per post; a natural topic phrase in the
+title, first paragraph and meaningful headings; no extra <h1>; descriptive
+link text; short custom permalink. Check: rendered headings, the generated
+description (first paragraph) and other Sightline posts targeting the same
+intent.
+02. OFF-PAGE SEO — Build reputation outside sightaud.com.
+Actions: share original audit findings, answer questions in developer and SEO
+communities, earn mentions in tool roundups. Check: relevant referring
+domains, referral traffic and real mentions, not raw backlink counts.
+03. TECHNICAL SEO — Enable discovery, crawling, rendering and indexing.
+Actions: Sightline already serves HTTPS pages, canonical URLs, sitemap,
+robots.txt, server-rendered HTML and structured data. Still to do in
+Cloudflare: Always Use HTTPS and a www -> sightaud.com redirect. Check:
+Search Console URL Inspection, indexed canonical and crawl errors. Run
+Sightline itself on https://sightaud.com/blogs after each change.
+04. CONTENT SEO — Satisfy a real need better than competing pages.
+Actions: research the query, find missing answers, add real audit examples,
+screenshots, limitations and credible sources. Update facts when tools
+change. Check: organic clicks, engaged sessions, audits started from posts.
+05. LINK BUILDING — Earn useful links from relevant websites.
+Actions: publish link-worthy checklists, templates (launch-day test plan),
+benchmarks and case studies; pitch editors with a specific reason to cite.
+Mark paid links rel="sponsored". No bought links, link farms or spam
+outreach. Check: quality and relevance of earned links.
+06. SEMANTIC SEO — Cover concepts, entities and relationships naturally.
+Actions: define terms (LCP, CLS, hreflang, canonical, CAA, DMARC), cover
+related questions and comparisons, and link posts into topic clusters
+(SEO, performance, security, launch). No mechanical synonym repetition.
+Check: coverage of real user questions and query impressions.
+07. LOCAL SEO — Attract customers in a real service area.
+Actions: only if you offer real local services (for example audits for
+businesses in Hyderabad or Karachi): real contact details, local examples
+and genuine reviews. No fake addresses or copied city pages. Check: local
+impressions and qualified inquiries.
+08. INTERNATIONAL SEO — Reach distinct countries and markets.
+Actions: adapt examples, regulations (GDPR, cookie consent) and hosting or
+CDN availability to real markets. Check: country performance and landing
+pages.
+09. MULTILINGUAL SEO — Serve readers in their own language.
+Actions: Sightline's app speaks 14 languages; for the blog, publish each
+language as its own complete Blogger post with its own permalink. Translate
+title, alt text and calls to action; no unreviewed machine translation.
+hreflang between blog translations is not supported yet. Check: each
+translated page loads and is indexable.
+10. ENTERPRISE SEO — Manage search quality at scale.
+Actions: reuse the template above, keep labels consistent, review posts
+before publishing, monitor the sitemap and Search Console coverage. Check:
+template defects and conversion by label.
+11. E-COMMERCE SEO — Help shoppers discover and evaluate products.
+Actions: write e-commerce audit guides (product page speed, duplicate
+category URLs, Product markup) using real store examples. Check: impressions
+for e-commerce audit queries.
+12. B2B SEO — Generate qualified users and leads.
+Actions: target problem, comparison and solution queries (website audit for
+agencies, pre-launch QA, client-ready PDF reports); show real report
+screenshots, scope and a relevant "Audit a website" or download call to
+action. Check: audits started and downloads, not traffic alone.
+13. AFFILIATE SEO — Recommend tools with transparent monetization.
+Actions: disclose commissions, give first-hand comparisons with selection
+criteria and drawbacks, mark affiliate links rel="sponsored". No copied
+descriptions or invented testing. Check: useful clicks and disclosed
+conversions.
+14. MOBILE SEO — Make content usable on phones.
+Actions: the blog layout is responsive; keep tables small, images sized and
+embeds to YouTube/Vimeo. Check: post pages on a phone and Sightline's
+iPhone & iPad audit.
+15. VOICE SEO — Answer conversational questions directly.
+Actions: use natural question headings ("How do I find broken links on my
+website?") with short spoken-friendly answers. Check: question-query
+visibility.
+16. IMAGE SEO — Make original visuals accessible and discoverable.
+Actions: descriptive file names, accurate alt text, captions where useful,
+WebP or AVIF where possible, at least 1200 px wide for the first image
+(it becomes the share image). Check: image impressions and page speed.
+17. NEWS SEO — Publish timely, verifiable updates.
+Actions: for Sightline releases and search changes, separate the event date
+from the publish date, cite original announcements and name the author.
+Never invent breaking news. Check: Discover and news performance.
+18. FEATURED SNIPPET SEO — Make answers easy to extract.
+Actions: put a direct definition or answer right under a matching <h2>, then
+steps, a table or evidence. No word count or markup guarantees selection.
+Check: snippet appearances and clicks.
+19. ZERO-CLICK SEO — Create value even when the answer shows in results.
+Actions: answer simple questions immediately; offer what justifies a visit:
+the free audit, templates and real examples. Keep "Sightline" visible.
+Check: impressions, branded searches and audits started.
+20. WHITE-HAT SEO — Sustainable, policy-aligned optimization.
+Actions: improve usefulness, accessibility, speed and reputation. Check:
+stable indexing and no manual actions.
+21. GRAY-HAT SEO — Risky tactics near policy boundaries.
+Overview: questionable link swaps or thin "comparison" pages may bring
+short-term exposure but carry risk. Do not use them; replace with genuine
+editorial work.
+22. BLACK-HAT SEO — Manipulation that violates search policies.
+Overview: cloaking, hidden ranking text, link schemes and mass low-value
+pages lead to removal. Do not use. Visitors and search engines must always
+see the same content.
+23. NEGATIVE SEO — Attempts to damage another site's visibility.
+Overview: defensive only: monitor security, backlinks, manual actions and
+unexpected changes to sightaud.com; disavow only as Google recommends.
+Never target competitors.
+24. PARASITE SEO — Using another site's authority for visibility.
+Overview: legitimate guest posts on relevant sites can reach new audiences;
+unrelated low-value posts on big domains are site reputation abuse. Publish
+useful work under the host's rules.
+25. PROGRAMMATIC SEO — Generate useful pages from structured data.
+Actions: only with real distinct value (for example anonymised audit
+statistics by industry), reliable data and quality checks. No mass keyword
+variations. Check: sample page quality and index coverage.
+26. BRAND SEO — Improve visibility and accuracy for "Sightline" searches.
+Actions: consistent product name, description, GitHub repo, website and
+author identity; link the blog to https://sightaud.com and the GitHub repo.
+Check: branded impressions and correct brand references.
+27. BRANCH SEO — Optimize genuine physical business locations.
+Actions: only if real offices exist: unique location details, hours and
+reviews per location. Never invent branches. (Sightline is software, so
+this usually does not apply.)
+28. EBAY SEO — Improve marketplace listing discovery.
+Actions: blog topic only: guides on auditing store pages and listings with
+accurate categories, titles, item specifics and photos.
+29. AMAZON SEO — Improve product discoverability.
+Actions: blog topic only: accurate titles, attributes, search terms, images;
+no review manipulation.
+30. YOUTUBE SEO — Help viewers find and watch videos.
+Actions: post Sightline walkthroughs (for example the intro video) with
+accurate titles, thumbnails, captions and chapters; embed them in posts.
+Check: search traffic, retention and watch time.
+31. ETSY SEO — Match product searches on Etsy.
+Actions: blog topic only: titles, tags, categories, attributes and photos.
+32. PINTEREST SEO — Optimize visual discovery.
+Actions: vertical pins of checklists and report screenshots linking to the
+matching post. Check: saves and outbound clicks.
+33. QUORA SEO — Earn discovery through helpful answers.
+Actions: answer website-audit questions completely, disclose that you make
+Sightline, link only where it adds value. Check: answer views and referrals.
+34. SHOPIFY SEO — Optimize storefronts and catalogs.
+Actions: write Shopify audit guides: collection and product pages,
+canonicals, redirects, theme speed; show real Sightline findings. Check:
+impressions for Shopify audit queries.
+35. REDDIT SEO — Reach topic communities and search-visible discussions.
+Actions: read each subreddit's rules, share original findings or thoughtful
+answers, disclose that you build Sightline, no vote manipulation or link
+dumping. Check: meaningful discussions and allowed referrals.
+36. WORDPRESS SEO — Optimize CMS publishing.
+Actions: write WordPress audit guides: one SEO plugin, permalinks, sitemap,
+caching, image optimization. Check: impressions for WordPress audit queries.
+37. APP STORE SEO / ASO — Improve discovery in app marketplaces.
+Actions: when Sightline ships to app stores (Microsoft Store, Mac App Store,
+Snapcraft, Flathub), use an accurate name, localized descriptions,
+screenshots and video. ASO is separate from website SEO.
+38. LINKEDIN SEO — Improve professional discoverability.
+Actions: share audit insights and Sightline updates with clear headings and
+real evidence; consistent expertise keywords in the profile. No engagement
+bait. Check: profile visits and qualified messages.
+39. GOOGLE MAPS SEO — Improve eligible local business visibility.
+Actions: only for a real business with a real address or service area:
+verified Business Profile, correct category, hours and genuine reviews.
+Online-only software may not be eligible.
+40. AEO (ANSWER ENGINE OPTIMIZATION) — Make answers easy to reuse.
+Actions: direct answers, clear questions, definitions, evidence and clean
+HTML. Sightline already adds BlogPosting data. Check: answer visibility and
+referrals.
+41. GEO (GENERATIVE ENGINE OPTIMIZATION) — Be discoverable in AI search.
+Actions: publish distinctive, verifiable information (real audit results)
+with sources and stable URLs; keep main content in plain HTML. Measure
+citations across a fixed set of prompts. No magic formula.
+42. LLM SEO — Help models understand Sightline accurately.
+Actions: consistent product facts (free, open source, MIT, Windows, macOS,
+Linux, web, MCP server), clear relationships and source links. Keep
+https://sightaud.com/llms.txt accurate; it is optional, not a ranking
+requirement.
+43. GOOGLE AI OVERVIEW SEO — Support eligibility for Google's AI features.
+Actions: follow normal search eligibility and people-first content; keep
+visible content and structured data consistent. No special AI file needed.
+Check: Search Console and landing-page results.
+44. CHATGPT SEO — Improve eligibility in ChatGPT search.
+Actions: check OpenAI's current crawler documentation; allow OAI-SearchBot
+if you want search visibility (sightaud.com robots.txt currently allows all
+crawlers except /api/); confirm Cloudflare does not block it. GPTBot
+training access is a separate choice. Check: citations and referrals.
+45. PERPLEXITY SEO — Improve discovery in Perplexity answers.
+Actions: check current crawler documentation, review PerplexityBot access in
+Cloudflare, publish evidence-rich text with dates and stable URLs. Check:
+sampled citations and referral sessions.
+46. GOOGLE DISCOVER SEO — Improve readiness for interest-based discovery.
+Actions: accurate, non-sensational titles; original insights; a large
+first image (at least 1200 px wide). Check: the Discover report if
+available; traffic is unpredictable.
+
+
+==================================================
+ARTICLE GENERATION WORKFLOW (AI AGENT INSTRUCTIONS)
+==================================================
+1. BRIEF: identify the reader (site owner, developer, agency, SEO), goal
+(audits started, downloads, MCP setup), primary query, intent and language.
+Pick only the playbook sections that apply. Never invent search volume,
+keyword difficulty or trends.
+2. RESEARCH: verify claims, dates and tool versions. Compare competing
+results and find a real gap. Run Sightline on real public examples where it
+helps. Never invent results, benchmarks, screenshots, experience or
+citations.
+3. ANGLE: choose one useful, specific argument. Draft three hooks and pick
+the strongest truthful one.
+4. METADATA (Blogger fields only): a 50-60 character title, a custom
+permalink, 1-3 labels from the list, a first paragraph of about 140-158
+characters that answers the question, and a real first image.
+5. BODY: answer near the top; <h2>/<h3> sections; original evidence, steps
+or code; trade-offs; conclusion. No <h1>, no <script>, no <style>, no
+private HTML comments, no final "Audit a website" box (the page adds one).
+Escape HTML inside code examples.
+6. VISUALS: a distinctive 16:9 first image of at least 1200 px, real report
+screenshots and meaningful alt text. Never use a fake screenshot as
+evidence.
+7. LINKS: link to related Sightline posts and pages that really exist
+(https://sightaud.com/app, https://sightaud.com/blogs/...), plus primary
+external sources near factual claims. Descriptive anchors only.
+8. CONVERSION: one natural mention of the free audit or the desktop app
+where it helps the reader. Do not interrupt the main answer with sales copy.
+9. LOCALIZATION: publish other languages as separate complete posts only
+when someone can review them.
+10. DISTRIBUTION: the post also exists on sightaud.blogspot.com. To keep
+search engines focused on sightaud.com, set Blogger's custom robots header
+tags to noindex. Share an adapted insight on LinkedIn, X, DEV, Medium,
+Reddit or Hacker News only where allowed. Never buy engagement.
+11. MEASUREMENT: record publish date, target query, URL, baseline and goal.
+Review Search Console impressions, clicks, CTR and indexing, and audits
+started from the post. Refresh when evidence shows a need; never change
+dates artificially.
+
+
+==================================================
+TECHNICAL RELEASE GATE (developer tasks)
+==================================================
+- Open the live post at /blogs/YYYY/MM/slug: status 200, correct title,
+  description, canonical, Open Graph and X tags, image and internal links.
+- Confirm the post is in https://sightaud.com/sitemap.xml.
+- Confirm the BlogPosting data with Google's Rich Results Test.
+- Target good Core Web Vitals at the 75th percentile: LCP <= 2.5 s,
+  INP <= 200 ms, CLS <= 0.1. Use Sightline's Lighthouse-style audit as a
+  lab check.
+- Verify HTTPS, mobile layout, redirects, broken links and 404 behavior by
+  running Sightline on the post itself.
+- Never fabricate dates, reviews or author credentials. Check contrast,
+  keyboard access and alt text.
+- If the blog code changes, test old posts again and rebuild before
+  claiming anything works.
+
+
+==================================================
+PUBLISHING SCORECARD (editorial check, not a Google score)
+==================================================
+Score each 0-5: intent match, originality, factual reliability,
+readability, title and first paragraph, visual usefulness, link relevance,
+technical readiness, localization (if any), conversion relevance. Review
+anything below 4. Do not publish with broken URLs, placeholders, unverified
+claims, plagiarism or misleading statements. Never promise virality or #1
+rankings.
+
+
+==================================================
+REFERENCE MATERIAL (check current rules before acting)
+==================================================
+Google Search Central: https://developers.google.com/search/docs
+Google spam policies: https://developers.google.com/search/docs/essentials/spam-policies
+Google AI features: https://developers.google.com/search/docs/appearance/ai-features
+Google internationalization: https://developers.google.com/search/docs/specialty/international/localized-versions
+Blogger API v3: https://developers.google.com/blogger/docs/3.0/getting_started
+OpenAI crawlers: https://platform.openai.com/docs/bots
+Perplexity crawlers: https://docs.perplexity.ai/guides/bots
