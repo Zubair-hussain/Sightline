@@ -19,7 +19,7 @@ export const BLOG_REVALIDATE = 600;
 export interface BlogPost {
   id: string;
   title: string;
-  /** Path segments under /blog, taken from the Blogger URL: /2026/11/my-post.html → ['2026', '11', 'my-post']. */
+  /** Path segments under /blogs, taken from the Blogger URL: /2026/11/my-post.html → ['2026', '11', 'my-post']. */
   year: string;
   month: string;
   slug: string;
@@ -130,7 +130,7 @@ export async function getPost(year: string, month: string, slug: string): Promis
   return (await getPosts()).find((p) => p.year === year && p.month === month && p.slug === slug);
 }
 
-export const postPath = (p: Pick<BlogPost, 'year' | 'month' | 'slug'>): string => `/blog/${p.year}/${p.month}/${p.slug}`;
+export const postPath = (p: Pick<BlogPost, 'year' | 'month' | 'slug'>): string => `/blogs/${p.year}/${p.month}/${p.slug}`;
 
 export const formatDate = (iso: string): string =>
   new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
