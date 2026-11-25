@@ -1,0 +1,68 @@
+name: Deploy website (Cloudflare)
+
+# The public site is pre-rendered, including the blog pages pulled from Blogger.
+# Rebuilding hourly publishes new Blogger posts on sightaud.com within an hour.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - 'renderer/**'
+      - 'deploy/cloudflare/**'
+      - 'llms.txt'
+      - '.github/workflows/cloudflare.yml'
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SITE_URL: https://sightaud.com
+      NEXT_TELEMETRY_DISABLED: '1'
+      BLOGGER_API_KEY: ${{ secrets.BLOGGER_API_KEY }}
+      BLOGGER_BLOG_ID: ${{ vars.BLOGGER_BLOG_ID }}
+      BLOGGER_BLOG_URL: ${{ vars.BLOGGER_BLOG_URL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Skip when Cloudflare deploy secrets are missing
+        id: ready
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice::Add the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets to enable automatic deploys."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.ready.outputs.ok == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.ready.outputs.ok == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            deploy/cloudflare/package-lock.json
+      - if: steps.ready.outputs.ok == 'true'
+        run: npm ci --prefix web && npm ci --prefix deploy/cloudflare
+      - if: steps.ready.outputs.ok == 'true'
+        run: npm test --prefix deploy/cloudflare
+      - if: steps.ready.outputs.ok == 'true'
+        run: npm run build --prefix deploy/cloudflare
+      - if: steps.ready.outputs.ok == 'true'
+        run: npm run deploy --prefix deploy/cloudflare
+      - name: Verify the live site
+        if: steps.ready.outputs.ok == 'true'
+        run: |
+          curl --fail --retry 5 --retry-all-errors --retry-delay 5 -s https://sightaud.com/healthz | grep -q '"status":"ok"'
+          test "$(curl -s -o /dev/null -w '%{http_code}' https://sightaud.com/blog)" = 200
