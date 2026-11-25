@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -32,4 +32,16 @@ await cp(path.join(web, '.next/server/app/_not-found.html'), path.join(output, '
 for (const file of ['robots.txt', 'sitemap.xml']) {
   await cp(path.join(web, '.next/server/app', `${file}.body`), path.join(output, file));
 }
+// Blog: the index and every post pre-rendered from the Blogger API at build time.
+// Cloudflare serves /blog from blog.html and /blog/2026/11/post from blog/2026/11/post.html.
+const appDir = path.join(web, '.next/server/app');
+await cp(path.join(appDir, 'blog.html'), path.join(output, 'blog.html'));
+let posts = 0;
+for (const entry of await readdir(path.join(appDir, 'blog'), { recursive: true }).catch(() => [])) {
+  if (!/^\d{4}[\\/]\d{2}[\\/][^\\/]+\.html$/.test(entry)) continue;
+  await mkdir(path.dirname(path.join(output, 'blog', entry)), { recursive: true });
+  await cp(path.join(appDir, 'blog', entry), path.join(output, 'blog', entry));
+  posts++;
+}
+console.log(`Blog: ${posts} post page(s)${process.env.BLOGGER_API_KEY ? '' : ' (BLOGGER_API_KEY not set, so the blog shows its empty state)'}`);
 console.log(`Cloudflare frontend packaged at ${output}`);

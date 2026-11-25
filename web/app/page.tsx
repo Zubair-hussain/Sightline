@@ -2,7 +2,8 @@ import Image from 'next/image';
 import { HeroForm } from '@/components/HeroForm';
 import { Downloads } from '@/components/Downloads';
 import { McpSnippet } from '@/components/McpSnippet';
-import { FEATURES, FAQ, MCP_TOOLS, REPO_URL } from '@/lib/content';
+import { SiteHeader, SiteFooter } from '@/components/SiteChrome';
+import { FEATURES, FAQ, MCP_TOOLS } from '@/lib/content';
 
 const faqJsonLd = {
   '@context': 'https://schema.org',
@@ -13,20 +14,7 @@ const faqJsonLd = {
 export default function Home() {
   return (
     <>
-      <header className="global-nav">
-        <a className="brand" href="/" aria-label="Sightline home">
-          <img src="/assets/icon.svg" alt="" aria-hidden="true" />
-          <span>Sightline</span>
-        </a>
-        <nav aria-label="Main">
-          <a className="nav-link" href="#features">Features</a>
-          <a className="nav-link" href="#ways">How to use</a>
-          <a className="nav-link" href="#ai">AI apps</a>
-          <a className="nav-link" href="#download">Download</a>
-          <a className="nav-link" href="#faq">FAQ</a>
-          <a className="nav-link" href={REPO_URL}>GitHub</a>
-        </nav>
-      </header>
+      <SiteHeader base="" />
 
       <div className="sub-nav">
         <div className="title">Sightline</div>
@@ -126,15 +114,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="site-footer">
-        <div className="inner">
-          <div className="legal">
-            <span>Sightline — open-source website audits for Windows, macOS, Linux and the web.</span>
-            <span><a href="/app">Web app</a> · <a href="#download">Download</a> · <a href={REPO_URL}>GitHub</a> · <a href="/llms.txt">llms.txt</a></span>
-          </div>
-          <p className="muted">Scores are heuristics. Verify critical findings before acting on them. Lighthouse is a trademark of Google LLC; Sightline is not affiliated with Google.</p>
-        </div>
-      </footer>
+      <SiteFooter base="" />
     </>
   );
 }
