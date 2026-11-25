@@ -8,14 +8,14 @@ export const revalidate = 600;
 export const metadata: Metadata = {
   title: 'Blog',
   description: 'Guides and news from Sightline: SEO, website performance, accessibility, broken links and launch-day checklists, explained in plain language.',
-  alternates: { canonical: '/blog' },
-  openGraph: { type: 'website', url: '/blog', title: 'Sightline Blog', images: ['/assets/og.png'] },
+  alternates: { canonical: '/blogs' },
+  openGraph: { type: 'website', url: '/blogs', title: 'Sightline Blog', images: ['/assets/og.png'] },
 };
 
 export default async function BlogIndex() {
   const posts = await getPosts();
   const jsonLd = {
-    '@context': 'https://schema.org', '@type': 'Blog', name: 'Sightline Blog', url: `${SITE_URL}/blog`,
+    '@context': 'https://schema.org', '@type': 'Blog', name: 'Sightline Blog', url: `${SITE_URL}/blogs`,
     blogPost: posts.slice(0, 20).map((p) => ({ '@type': 'BlogPosting', headline: p.title, url: `${SITE_URL}${postPath(p)}`, datePublished: p.published })),
   };
   return (
