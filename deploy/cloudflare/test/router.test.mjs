@@ -158,6 +158,27 @@ test('Cloudflare serves frontend files without contacting an API origin', async 
   assert.equal(response.headers.get('x-frame-options'), 'DENY');
 });
 
+test('http:// and www. on the public domain redirect permanently to https://CANONICAL_HOST', async () => {
+  const env = { CANONICAL_HOST: 'sightaud.com' };
+  for (const from of ['http://sightaud.com/blogs?x=1', 'http://www.sightaud.com/blogs?x=1', 'https://www.sightaud.com/blogs?x=1']) {
+    const response = await worker.fetch(new Request(from), env, {});
+    assert.equal(response.status, 301, from);
+    assert.equal(response.headers.get('location'), 'https://sightaud.com/blogs?x=1', from);
+    assert.equal(response.headers.get('strict-transport-security'), 'max-age=31536000; includeSubDomains');
+  }
+  const post = await worker.fetch(new Request('http://sightaud.com/api/audit', { method: 'POST', body: '{}' }), env, {});
+  assert.equal(post.status, 308);
+  assert.equal(post.headers.get('location'), 'https://sightaud.com/api/audit');
+});
+
+test('the canonical host, workers.dev and local development are not redirected', async () => {
+  const env = { CANONICAL_HOST: 'sightaud.com', ASSETS: { fetch: async () => new Response('ok', { headers: { 'content-type': 'text/html' } }) } };
+  for (const url of ['https://sightaud.com/', 'https://sightline.example.workers.dev/', 'http://localhost:8787/']) {
+    assert.equal((await worker.fetch(new Request(url), env, {})).status, 200, url);
+  }
+  assert.equal((await worker.fetch(new Request('http://sightaud.com/'), { ASSETS: env.ASSETS }, {})).status, 200, 'no CANONICAL_HOST, no redirect');
+});
+
 test('Cloudflare downloads only redirect to known release filenames', async () => {
   const response = await worker.fetch(new Request('https://edge.example/download/windows'), {}, {});
   assert.equal(response.status, 302);
