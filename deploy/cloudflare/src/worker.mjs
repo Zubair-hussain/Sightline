@@ -19,9 +19,25 @@ function secure(response, cacheControl) {
   return new Response(response.body, { status: response.status, headers });
 }
 
+/**
+ * One address per page for search engines: http:// and www. requests for the public domain get a
+ * permanent redirect to https://CANONICAL_HOST with the same path and query. Other hosts (workers.dev,
+ * local development) are served unchanged. 308 keeps the method and body for non-GET requests.
+ */
+function canonicalRedirect(request, url, env) {
+  const host = env.CANONICAL_HOST;
+  if (!host || (url.hostname !== host && url.hostname !== `www.${host}`)) return null;
+  if (url.protocol === 'https:' && url.hostname === host) return null;
+  const target = new URL(url);
+  target.protocol = 'https:'; target.hostname = host; target.port = '';
+  return secure(Response.redirect(target.toString(), ['GET', 'HEAD'].includes(request.method) ? 301 : 308), 'public, max-age=86400');
+}
+
 export default {
   async fetch(request, env, context) {
     const url = new URL(request.url);
+    const redirect = canonicalRedirect(request, url, env);
+    if (redirect) return redirect;
     if (url.pathname.startsWith('/api/') || url.pathname === '/healthz') {
       // Only this small, public configuration response is cacheable. Reports and audits never are.
       const cacheable = url.pathname === '/api/config' && request.method === 'GET';
