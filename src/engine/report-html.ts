@@ -7,7 +7,7 @@ const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '
 export const CATEGORY_NAMES: Record<SL.CategoryKey, string> = {
   seo: 'SEO', hreflang: 'Hreflang', links: 'Links', website: 'Website health', performance: 'Performance',
   cloudflare: 'Cloudflare & DNS', mobile: 'iPhone & iPad', memory: 'Memory leaks',
-  lighthouse: 'Lighthouse', coverage: 'Code coverage',
+  lighthouse: 'Lighthouse', coverage: 'Code coverage', security: 'Cloudflare security',
 };
 
 const CATEGORY_DESC: Record<SL.CategoryKey, string> = {
@@ -21,9 +21,10 @@ const CATEGORY_DESC: Record<SL.CategoryKey, string> = {
   cloudflare: 'CDN, caching, TLS and DNS configuration.',
   lighthouse: 'Performance, Accessibility, Best Practices and SEO scores on a throttled device, scored like Lighthouse.',
   coverage: 'How much of the downloaded JavaScript and CSS the page actually uses.',
+  security: 'What attackers can see and reach from outside: security headers, email spoofing, subdomain takeover, exposed origin servers and Cloudflare WAF protection.',
 };
 
-const ORDER: SL.CategoryKey[] = ['lighthouse', 'seo', 'performance', 'coverage', 'mobile', 'memory', 'website', 'links', 'hreflang', 'cloudflare'];
+const ORDER: SL.CategoryKey[] = ['lighthouse', 'seo', 'performance', 'coverage', 'mobile', 'memory', 'website', 'links', 'hreflang', 'cloudflare', 'security'];
 const RANK: Record<SL.Status, number> = { fail: 0, warn: 1, pass: 2, info: 3 };
 const STATUS_LABEL: Record<SL.Status, string> = { pass: 'Passed', warn: 'Warning', fail: 'Failed', info: 'Info' };
 
