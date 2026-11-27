@@ -6,21 +6,22 @@ import { auditHreflang } from './hreflang';
 import { auditLinks } from './links';
 import { auditWebsite } from './website';
 import { auditCloudflare } from './cloudflare';
+import { auditSecurity } from './security';
 import { resolveBrand } from './brand';
 import { generateTestCases } from './testcases';
 
 export const VERSION = '1.0.0';
 
-export const ALL_MODULES: SL.CategoryKey[] = ['seo', 'hreflang', 'links', 'website', 'performance', 'lighthouse', 'coverage', 'cloudflare', 'mobile', 'memory'];
+export const ALL_MODULES: SL.CategoryKey[] = ['seo', 'hreflang', 'links', 'website', 'performance', 'lighthouse', 'coverage', 'cloudflare', 'security', 'mobile', 'memory'];
 export const BROWSER_MODULES: SL.CategoryKey[] = ['performance', 'lighthouse', 'coverage', 'mobile', 'memory'];
 
 const CATEGORY_WEIGHT: Record<SL.CategoryKey, number> = {
-  seo: 3, hreflang: 1, links: 2, website: 2.5, performance: 2.5, cloudflare: 1.5, mobile: 2, memory: 1.5, lighthouse: 3, coverage: 1,
+  seo: 3, hreflang: 1, links: 2, website: 2.5, performance: 2.5, cloudflare: 1.5, mobile: 2, memory: 1.5, lighthouse: 3, coverage: 1, security: 2,
 };
 
 const MODULE_TIMEOUT: Record<SL.CategoryKey, number> = {
   seo: 60000, hreflang: 120000, links: 240000, website: 90000, cloudflare: 120000,
-  performance: 120000, mobile: 120000, memory: 300000, lighthouse: 180000, coverage: 120000,
+  performance: 120000, mobile: 120000, memory: 300000, lighthouse: 180000, coverage: 120000, security: 120000,
 };
 
 export const DEFAULT_OPTIONS: Omit<SL.AuditOptions, 'url'> = {
@@ -79,6 +80,7 @@ export async function runAudit(
   await run('links', (log) => auditLinks(page, opts.maxLinks, log));
   await run('website', (log) => auditWebsite(page, log));
   await run('cloudflare', (log) => auditCloudflare(page, opts.cloudflareToken, log));
+  await run('security', (log) => auditSecurity(page, opts.cloudflareToken, log));
   if (browser) {
     await run('performance', () => browser.performance(page.finalUrl));
     await run('lighthouse', (log) => browser.lighthouse(page.finalUrl, opts.lighthouseFormFactor ?? 'mobile', log));

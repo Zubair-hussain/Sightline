@@ -1,6 +1,6 @@
 /* Browser implementation of the desktop bridge, used when the UI runs on the website (/app). */
 
-const ALL: SL.CategoryKey[] = ['seo', 'hreflang', 'links', 'website', 'performance', 'lighthouse', 'coverage', 'cloudflare', 'mobile', 'memory'];
+const ALL: SL.CategoryKey[] = ['seo', 'hreflang', 'links', 'website', 'performance', 'lighthouse', 'coverage', 'cloudflare', 'security', 'mobile', 'memory'];
 const DEFAULTS: SL.Settings = {
   language: 'auto', theme: 'system', maxPages: 8, maxLinks: 80, memoryIterations: 8, device: 'iphone', modules: ALL, cloudflareToken: '', reportTheme: 'brand',
   lighthouseFormFactor: 'mobile', memoryScenario: { mode: 'auto', steps: [], includeAuto: true }, memoryConsent: [],

@@ -3,7 +3,7 @@
 declare namespace SL {
   type Status = 'pass' | 'warn' | 'fail' | 'info';
 
-  type CategoryKey = 'seo' | 'hreflang' | 'links' | 'website' | 'performance' | 'cloudflare' | 'mobile' | 'memory' | 'lighthouse' | 'coverage';
+  type CategoryKey = 'seo' | 'hreflang' | 'links' | 'website' | 'performance' | 'cloudflare' | 'mobile' | 'memory' | 'lighthouse' | 'coverage' | 'security';
 
   /** Lighthouse-style scores (0–100) for the four classic categories. */
   interface LighthouseData {

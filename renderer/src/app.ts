@@ -8,10 +8,10 @@ import { renderTestCases } from './testcases-view.js';
 type View = 'home' | 'running' | 'report' | 'history' | 'settings';
 type Filter = 'all' | 'issues' | 'pass';
 
-const ORDER: SL.CategoryKey[] = ['lighthouse', 'seo', 'performance', 'coverage', 'mobile', 'memory', 'website', 'links', 'hreflang', 'cloudflare'];
+const ORDER: SL.CategoryKey[] = ['lighthouse', 'seo', 'performance', 'coverage', 'mobile', 'memory', 'website', 'links', 'hreflang', 'cloudflare', 'security'];
 const TILE: Record<SL.CategoryKey, string> = {
   lighthouse: 'tile-dark', seo: 'tile-light', performance: 'tile-parchment', coverage: 'tile-light', mobile: 'tile-dark', memory: 'tile-dark-2',
-  website: 'tile-light', links: 'tile-parchment', hreflang: 'tile-light', cloudflare: 'tile-dark',
+  website: 'tile-light', links: 'tile-parchment', hreflang: 'tile-light', cloudflare: 'tile-dark', security: 'tile-parchment',
 };
 const RANK: Record<SL.Status, number> = { fail: 0, warn: 1, pass: 2, info: 3 };
 
