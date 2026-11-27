@@ -11,7 +11,7 @@ Usage
   sightline <url> [options]
 
 Options
-  --modules <list>     Comma list: seo,hreflang,links,website,cloudflare  (default: all)
+  --modules <list>     Comma list: seo,hreflang,links,website,cloudflare,security  (default: all)
   --pages <n>          Pages to crawl for site-wide SEO checks (default 15)
   --links <n>          Maximum links to status-check (default 150)
   --json <file>        Write the full report as JSON
@@ -56,7 +56,7 @@ async function main(): Promise<void> {
   const { args, positional } = parseArgs(process.argv.slice(2));
   if (args.help || !positional[0]) { console.log(HELP); process.exit(args.help ? 0 : 1); }
   const quiet = Boolean(args.quiet);
-  const modules = (typeof args.modules === 'string' ? args.modules.split(',') : ['seo', 'hreflang', 'links', 'website', 'cloudflare'])
+  const modules = (typeof args.modules === 'string' ? args.modules.split(',') : ['seo', 'hreflang', 'links', 'website', 'cloudflare', 'security'])
     .map((m) => m.trim()).filter((m) => !BROWSER_MODULES.includes(m as SL.CategoryKey)) as SL.CategoryKey[];
 
   let last = '';
