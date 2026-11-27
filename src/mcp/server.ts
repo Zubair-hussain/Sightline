@@ -7,6 +7,7 @@ import * as fs from 'node:fs';
 import { runAudit, VERSION, ALL_MODULES, BROWSER_MODULES } from '../engine';
 import { CATEGORY_NAMES } from '../engine/report-html';
 import { testCasesToCsv, testCasesToMarkdown, testCasesToPlaywright } from '../engine/testcases';
+import { formatSecretsText, isGitUrl, scanLocalTarget } from '../engine/secrets/local';
 
 type Json = Record<string, unknown>;
 interface RpcRequest { jsonrpc: '2.0'; id?: string | number | null; method: string; params?: Json }
@@ -67,6 +68,7 @@ function toolDefs(browser: boolean) {
     { name: 'check_links', title: 'Broken link check', description: 'Status-check every <a href> on the page: broken links, redirects, empty and unsafe links.', inputSchema: { type: 'object', properties: { url: urlProp, max_links: { type: 'integer', minimum: 10, maximum: 1000 } }, required: ['url'] } },
     { name: 'check_cloudflare', title: 'Cloudflare & DNS audit', description: 'Check Cloudflare proxying, caching, TLS, HSTS, HTTP/3, origin IP exposure, DNSSEC, CAA and email records.', inputSchema: { type: 'object', properties: { url: urlProp }, required: ['url'] } },
     { name: 'check_cloudflare_security', title: 'Cloudflare security audit', description: 'Check what attackers can see from outside: Content-Security-Policy and other protection headers, security.txt, SPF/DMARC/MTA-STS spoofing protection, subdomain takeover (dangling CNAMEs) and origin servers revealed by certificate-transparency logs. With a Cloudflare API token configured in the app: WAF managed rules, rate limiting, Bot Fight Mode and leaked-credential detection. Read-only: DNS lookups and ordinary GET requests.', inputSchema: { type: 'object', properties: { url: urlProp }, required: ['url'] } },
+    { name: 'check_secrets', title: 'Exposed secrets scan', description: 'Find leaked API keys, tokens, passwords and private keys (about 50 kinds). target can be a website (scans the page, its scripts, public source maps and commonly leaked files such as /.env and /.git/config), a local folder, a local Git repository (every commit on every branch, so deleted secrets are found too) or a Git URL (cloned to a temporary folder). Secrets are returned masked. verify: true asks each provider with one read-only request whether a key still works; only do that after the user confirms they own the site or code, and pass i_have_permission: true.', inputSchema: { type: 'object', properties: { target: { type: 'string', description: 'Website URL, folder path, local repository path or Git URL' }, verify: { type: 'boolean', description: 'Check with each provider whether found keys are live (read-only). Requires i_have_permission.' }, i_have_permission: { type: 'boolean', description: 'true only after the user confirmed they own the site or code' } }, required: ['target'] } },
     { name: 'check_security', title: 'Website security & health', description: 'Check HTTPS, certificate, security headers, cookies, compression, caching and accessibility basics.', inputSchema: { type: 'object', properties: { url: urlProp }, required: ['url'] } },
   ];
   if (browser) {
@@ -101,6 +103,18 @@ export function startMcpServer(browser: SL.BrowserRunner | null, onClose: () => 
   const fail = (id: RpcRequest['id'], code: number, message: string) => send({ jsonrpc: '2.0', id: id ?? null, error: { code, message } });
 
   async function callTool(name: string, args: Json) {
+    if (name === 'check_secrets') {
+      const target = String(args.target ?? args.url ?? '').trim();
+      if (!target) throw new Error('Pass target: a website URL, folder, repository path or Git URL.');
+      const verify = args.verify === true;
+      if (verify && args.i_have_permission !== true) throw new Error('Verifying keys contacts each provider with the found key. Ask the user to confirm they own the site or code, then call again with i_have_permission: true.');
+      if (/^https?:\/\//i.test(target) && !isGitUrl(target)) {
+        const report = await runAudit({ url: target, modules: ['secrets'], verifySecrets: verify }, null, (p) => log(`${p.pct}% ${p.step}`));
+        return { content: [{ type: 'text', text: reportToMarkdown(report) }] };
+      }
+      const result = await scanLocalTarget(target, { verify, onProgress: log });
+      return { content: [{ type: 'text', text: formatSecretsText(result) }] };
+    }
     const url = String(args.url ?? '');
     if (!url) throw new Error('"url" is required');
     let modules: SL.CategoryKey[];
