@@ -54,9 +54,14 @@ export async function scanFolder(dir: string, opts: LocalScanOptions = {}): Prom
       const p = path.join(d, e.name);
       if (e.isDirectory()) { if (!SKIP_DIRS.has(e.name)) await walk(p); continue; }
       if (!e.isFile() || SKIP_EXT.test(e.name)) continue;
-      const stat = await fs.stat(p).catch(() => null);
-      if (!stat || stat.size > MAX_FILE) continue;
-      const buf = await fs.readFile(p).catch(() => null);
+      // Stat and read through one handle so the file cannot be swapped between the size check and the read.
+      const handle = await fs.open(p, 'r').catch(() => null);
+      if (!handle) continue;
+      let buf: Buffer | null = null;
+      try {
+        const stat = await handle.stat();
+        if (stat.isFile() && stat.size <= MAX_FILE) buf = await handle.readFile();
+      } catch { buf = null; } finally { await handle.close().catch(() => undefined); }
       if (!buf || buf.subarray(0, 8000).includes(0)) continue;
       scanned.files++; scanned.bytes += buf.length;
       if (scanned.files % 500 === 0) opts.onProgress?.(`Scanned ${scanned.files} files`);
