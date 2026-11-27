@@ -1,7 +1,9 @@
 import { MORE_EN, MORE } from './i18n-more.js';
+import { SECURITY_EN, SECURITY } from './i18n-security.js';
 
 const en = {
   ...MORE_EN,
+  ...SECURITY_EN,
   'nav.audit': 'Audit', 'nav.history': 'History', 'nav.settings': 'Settings',
   'hero.eyebrow': 'Sightline', 'hero.title': 'Every detail. Audited.',
   'hero.lead': 'SEO, hreflang, links, performance, Cloudflare, iPhone and memory leaks — in one place.',
@@ -376,7 +378,8 @@ export function setLanguage(code: string): void {
 }
 
 export function t(key: Key): string {
-  return active.dict[key] ?? EXTRA[active.code]?.[key] ?? (MORE[active.code] as Partial<Record<Key, string>> | undefined)?.[key] ?? en[key];
+  return active.dict[key] ?? EXTRA[active.code]?.[key] ?? (MORE[active.code] as Partial<Record<Key, string>> | undefined)?.[key]
+    ?? (SECURITY[active.code] as Partial<Record<Key, string>> | undefined)?.[key] ?? en[key];
 }
 
 export function currentLocale(): string { return active.code; }
