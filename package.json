@@ -18,6 +18,7 @@
     "package:linux": "npm run dist:linux",
     "smoke": "npm run build && electron . --smoke=https://example.com",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.renderer.json --noEmit",
+    "test": "tsc -p tsconfig.test.json && node --test \"out-test/test/**/*.test.js\"",
     "start": "npm run build && electron .",
     "dev": "npm run build && electron . --dev",
     "cli": "npm run build && node out/cli/sightline.js",
