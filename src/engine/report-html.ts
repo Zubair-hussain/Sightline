@@ -147,7 +147,7 @@ export function renderHtmlReport(report: SL.Report, options: ReportOptions = {})
         </td></tr>`).join('');
     const mem = c.key === 'memory' ? memoryFigure(c.data as unknown as SL.MemoryData) : '';
     const lh = c.key === 'lighthouse' ? lighthouseGauges(c.data as unknown as SL.LighthouseData) : '';
-    const cov = c.key === 'coverage' ? coverageTable(c.data as unknown as SL.CoverageData) : '';
+    const cov = c.key === 'coverage' ? coverageSection(c.data as unknown as SL.CoverageData) : '';
     const vitals = c.key === 'performance' && perf ? `<div class="vitals">${[
       ['LCP', perf.lcp == null ? '—' : `${(perf.lcp / 1000).toFixed(2)} s`],
       ['FCP', perf.fcp == null ? '—' : `${(perf.fcp / 1000).toFixed(2)} s`],
@@ -246,13 +246,28 @@ export function renderHtmlReport(report: SL.Report, options: ReportOptions = {})
   .cov td { padding:6px; word-break:break-all; }
   .covbar { height:6px; border-radius:3px; background:var(--soft); position:relative; min-width:80px; }
   .covbar i { position:absolute; left:0; top:0; bottom:0; border-radius:3px; background:#d93025; }
+  .cov-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:6px 0 14px; break-inside:avoid; }
+  .cov-cards div { background:var(--soft); border-radius:12px; padding:10px; }
+  .cov-cards b { display:block; font-family:${fontHeading}; font-size:18px; }
+  .cov-cards span { font-size:11px; color:var(--muted); }
+  .cov-split { margin:0 0 14px; break-inside:avoid; }
+  .cov-split .row { display:grid; grid-template-columns:110px 1fr 150px; gap:10px; align-items:center; font-size:11px; margin:5px 0; }
+  .cov-split .bar { height:12px; border-radius:6px; background:#1f9d55; display:flex; overflow:hidden; }
+  .cov-split .bar i { background:#d93025; display:block; height:100%; }
+  .cov-split .bar.party { background:var(--accent); }
+  .cov-split .bar.party i { background:#8e8e93; }
+  .cov-legend { font-size:10px; color:var(--muted); margin:2px 0 0; }
+  .cov-legend i { display:inline-block; width:8px; height:8px; border-radius:2px; margin:0 4px 0 10px; vertical-align:0; }
+  .cov-wins { margin:0 0 14px; padding-left:18px; font-size:12px; break-inside:avoid; }
+  .cov-wins li { margin:3px 0; word-break:break-all; }
+  .cov .tag, .cov-wins .tag { font-size:9px; font-weight:700; text-transform:uppercase; color:var(--muted); border:1px solid var(--hair); border-radius:4px; padding:0 4px; margin-left:4px; }
   .tp td { font-size:11px; }
   .tp .st-pass { color:#1f9d55; font-weight:700; } .tp .st-fail { color:#d93025; font-weight:700; } .tp .st-not-run { color:var(--muted); } .tp .st-blocked { color:#c77700; font-weight:700; }
   .memfig { border:1px solid var(--hair); border-radius:12px; padding:12px; margin:6px 0 14px; break-inside:avoid; }
   .memfig .cap { font-size:11px; color:var(--muted); margin-bottom:4px; }
   footer { padding:24px 56px 40px; font-size:11px; color:var(--muted); }
   @media screen { .cover { height:auto; min-height:640px; } body { max-width:1000px; margin:0 auto; box-shadow:0 0 0 1px var(--hair); } }
-  @media (max-width: 700px) { .tiles { grid-template-columns:repeat(2,1fr); } .page, .cover { padding:28px 20px; } .shots { flex-direction:column; align-items:center; } .vitals { grid-template-columns:repeat(3,1fr); } .cover h1 { font-size:38px; } }
+  @media (max-width: 700px) { .tiles { grid-template-columns:repeat(2,1fr); } .page, .cover { padding:28px 20px; } .shots { flex-direction:column; align-items:center; } .vitals { grid-template-columns:repeat(3,1fr); } .cover h1 { font-size:38px; } .cov-cards { grid-template-columns:repeat(2,1fr); } .cov-split .row { grid-template-columns:80px 1fr; } .cov-split .row > span:last-child { grid-column:1 / -1; color:var(--muted); } }
 </style></head><body>
 ${cover}
 ${summary}
@@ -291,11 +306,47 @@ function lighthouseGauges(d: SL.LighthouseData | undefined): string {
     <p class="lh-cond">${esc(d.throttling)}</p>`;
 }
 
-function coverageTable(d: SL.CoverageData | undefined): string {
+/**
+ * Code coverage for the PDF/HTML report: totals, used vs unused bars per file type, first- vs
+ * third-party waste, the biggest single wins, and the file list. Everything is inline HTML/CSS so
+ * the PDF stays self-contained.
+ */
+export function coverageSection(d: SL.CoverageData | undefined): string {
   if (!d?.files?.length) return '';
-  const kb = (n: number) => `${(n / 1024).toFixed(0)} KB`;
-  const rows = d.files.slice(0, 12).map((f) => `<tr><td>${f.type.toUpperCase()}</td><td>${esc(f.url.length > 80 ? '…' + f.url.slice(-78) : f.url)}</td><td>${kb(f.total)}</td><td>${kb(f.unused)}</td><td><div class="covbar"><i style="width:${f.pct}%"></i></div> ${f.pct}%</td></tr>`).join('');
-  return `<table class="cov"><tr><th>Type</th><th>File</th><th>Size</th><th>Unused</th><th>Unused share</th></tr>${rows}</table>`;
+  const size = (n: number) => (n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.round(n / 1024)} KB`);
+  const pct = (unused: number, total: number) => (total ? Math.round((unused / total) * 100) : 0);
+  const total = d.js.total + d.css.total;
+  const unused = d.js.unused + d.css.unused;
+  const third = d.files.filter((f) => !f.firstParty);
+  const thirdUnused = third.reduce((a, f) => a + f.unused, 0);
+  const firstUnused = unused - thirdUnused;
+
+  const cards = `<div class="cov-cards">
+    <div><b>${size(d.js.unused)}</b><span>Unused JavaScript · ${pct(d.js.unused, d.js.total)}% of ${size(d.js.total)}</span></div>
+    <div><b>${size(d.css.unused)}</b><span>Unused CSS · ${pct(d.css.unused, d.css.total)}% of ${size(d.css.total)}</span></div>
+    <div><b>${size(unused)}</b><span>Could be removed · ${pct(unused, total)}% of all JS + CSS</span></div>
+    <div><b>${d.files.length}</b><span>Files measured · ${third.length} third-party</span></div>
+  </div>`;
+
+  const bar = (label: string, u: number, t: number, cls = '') =>
+    `<div class="row"><span>${esc(label)}</span><div class="bar ${cls}" role="img" aria-label="${esc(label)}: ${pct(u, t)}%"><i style="width:${pct(u, t)}%"></i></div><span>${size(u)} of ${size(t)} (${pct(u, t)}%)</span></div>`;
+  const split = `<div class="cov-split">
+    ${bar('JavaScript', d.js.unused, d.js.total)}
+    ${bar('CSS', d.css.unused, d.css.total)}
+    <p class="cov-legend"><i style="background:#1f9d55"></i>Used<i style="background:#d93025"></i>Unused</p>
+    ${unused ? `${bar('Unused, by owner', thirdUnused, unused, 'party')}
+    <p class="cov-legend"><i style="background:var(--accent)"></i>Your own files ${size(firstUnused)}<i style="background:#8e8e93"></i>Third-party ${size(thirdUnused)}</p>` : ''}
+  </div>`;
+
+  const name = (url: string) => (url.length > 90 ? '…' + url.slice(-88) : url);
+  const wins = d.files.filter((f) => f.unused > 0).slice(0, 5);
+  const winList = wins.length ? `<h3>Biggest wins</h3><ol class="cov-wins">${wins.map((f) =>
+    `<li><strong>Save ${size(f.unused)}</strong> in ${esc(name(f.url))}${f.firstParty ? '' : ' <span class="tag">3rd-party</span>'}</li>`).join('')}</ol>` : '';
+
+  const LIMIT = 25;
+  const rows = d.files.slice(0, LIMIT).map((f) => `<tr><td>${f.type.toUpperCase()}</td><td>${esc(name(f.url))}${f.firstParty ? '' : '<span class="tag">3rd-party</span>'}</td><td>${size(f.total)}</td><td>${size(f.unused)}</td><td><div class="covbar"><i style="width:${f.pct}%"></i></div> ${f.pct}%</td></tr>`).join('');
+  const more = d.files.length > LIMIT ? `<tr><td colspan="5" class="muted">… and ${d.files.length - LIMIT} more file(s) with less unused code.</td></tr>` : '';
+  return `${cards}${split}${winList}<h3>Every file</h3><table class="cov"><tr><th>Type</th><th>File</th><th>Size</th><th>Unused</th><th>Unused share</th></tr>${rows}${more}</table>`;
 }
 
 function testPlan(report: SL.Report): string {
