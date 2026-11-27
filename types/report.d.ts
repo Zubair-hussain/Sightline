@@ -3,7 +3,7 @@
 declare namespace SL {
   type Status = 'pass' | 'warn' | 'fail' | 'info';
 
-  type CategoryKey = 'seo' | 'hreflang' | 'links' | 'website' | 'performance' | 'cloudflare' | 'mobile' | 'memory' | 'lighthouse' | 'coverage' | 'security';
+  type CategoryKey = 'seo' | 'hreflang' | 'links' | 'website' | 'performance' | 'cloudflare' | 'mobile' | 'memory' | 'lighthouse' | 'coverage' | 'security' | 'secrets';
 
   /** Lighthouse-style scores (0–100) for the four classic categories. */
   interface LighthouseData {
@@ -153,6 +153,8 @@ declare namespace SL {
     memoryScenario?: MemoryScenario;
     lighthouseFormFactor?: 'mobile' | 'desktop';
     cloudflareToken?: string;
+    /** Ask providers whether found secrets are live. Only after the user confirms they own the site. */
+    verifySecrets?: boolean;
     device?: 'iphone' | 'ipad';
   }
 
