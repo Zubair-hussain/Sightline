@@ -54,19 +54,20 @@ See [`video/CREDITS.md`](video/CREDITS.md) for media credits.
 10. [Reports](#-reports)
 11. [Launch-day test plan](#-launch-day-test-plan)
 12. [Memory-leak test and safety](#-memory-leak-test-and-safety)
-13. [AI apps (MCP server)](#-ai-apps-mcp-server)
-14. [Command-line interface](#-command-line-interface)
-15. [Web version and HTTP API](#-web-version-and-http-api)
-16. [Security and privacy model](#-security-and-privacy-model)
-17. [Deployment](#-deployment)
-18. [Configuration reference](#-configuration-reference)
-19. [Project structure](#-project-structure)
-20. [Tech stack](#-tech-stack)
-21. [How Sightline compares](#-how-sightline-compares)
-22. [FAQ](#-faq)
-23. [Roadmap](#-roadmap)
-24. [Contributing](#-contributing)
-25. [License](#license)
+13. [Exposed-secrets scanner](#-exposed-secrets-scanner)
+14. [AI apps (MCP server)](#-ai-apps-mcp-server)
+15. [Command-line interface](#-command-line-interface)
+16. [Web version and HTTP API](#-web-version-and-http-api)
+17. [Security and privacy model](#-security-and-privacy-model)
+18. [Deployment](#-deployment)
+19. [Configuration reference](#-configuration-reference)
+20. [Project structure](#-project-structure)
+21. [Tech stack](#-tech-stack)
+22. [How Sightline compares](#-how-sightline-compares)
+23. [FAQ](#-faq)
+24. [Roadmap](#-roadmap)
+25. [Contributing](#-contributing)
+26. [License](#license)
 
 ---
 
@@ -108,6 +109,8 @@ It ships as:
 | **iPhone & iPad** | iOS Safari emulation: 44 pt tap targets, input auto-zoom, safe areas, `100vh`, touch icon, Universal Links, device screenshot | Desktop |
 | **Website health** | HTTPS, TLS expiry and version, HSTS, CSP, clickjacking, cookies, compression, caching, HTTP/3, mixed content, accessibility basics | Desktop · Web · CLI |
 | **Cloudflare & DNS** | Proxy detection, edge caching, minimum TLS, origin-IP exposure, DNSSEC, CAA, SPF/DMARC, optional zone-settings review via API | Desktop · Web · CLI |
+| **Cloudflare security** | CSP quality, Referrer/Permissions-Policy, nosniff, COOP, `security.txt`, SPF `-all` / DMARC `p=reject` / MTA-STS, subdomain takeover, origins revealed by certificate-transparency logs; with a token: WAF managed rules, rate limiting, Bot Fight Mode, leaked-credential detection | Desktop · Web · CLI |
+| **Exposed secrets** | 51 kinds of API keys, tokens, private keys and database passwords in the page, scripts and **public source maps**, plus leaked `.env`, `.git` and other files; also folders and full **Git history**; optional read-only key verification | Desktop · Web · CLI |
 
 ## ⬇️ Download
 
@@ -329,6 +332,23 @@ The memory test uses the website like a visitor, many times in a row, and measur
 - Risky custom steps are flagged before you run them.
 - Through MCP, AI apps must pass `i_have_permission: true` after asking you.
 
+## 🔑 Exposed-secrets scanner
+
+Sightline Secrets looks for API keys, tokens, passwords and private keys where other people can read them. It is written for Sightline under MIT, with no code from other scanners; the patterns follow each provider's published key format.
+
+- **Websites:** the page, every same-site script, **public source maps with the original source they embed**, and files often published by mistake (`/.env`, `/.git/config`, `/.npmrc`, backups …).
+- **Folders and Git history:** every commit on every branch, so a key that was committed and later deleted is still found, with commit, author, file and line.
+- **51 detectors:** AWS, Google Cloud, Azure, GitHub, GitLab, npm, Stripe, OpenAI, Anthropic, Slack, SendGrid, Supabase `service_role`, database URLs, private keys and more. Keys hidden with base64, URL or unicode encoding are found too.
+- **Masked results:** reports show `sk_l…9fQ2`, never the full value.
+- **Optional verification for your own site or code:** one read-only "who am I" request per key tells you whether it is still live (23 providers). Off by default, requires confirmation, never in the web version.
+
+```text
+sightline secrets https://your-site.com
+sightline secrets ./my-project --fail-on-found
+```
+
+Full details: [docs/secrets-scanner.md](docs/secrets-scanner.md).
+
 ## 🤖 AI apps (MCP server)
 
 Sightline implements the **Model Context Protocol**, so MCP-compatible AI assistants and code editors (for example Cursor and VS Code) can run audits on request.
@@ -358,6 +378,8 @@ Without the desktop app, `node out/mcp/stdio.js` runs the five server-side audit
 | `check_hreflang` | Hreflang validation |
 | `check_security` | Website health and security headers |
 | `check_cloudflare` | Cloudflare and DNS review |
+| `check_cloudflare_security` | Security headers, email spoofing, subdomain takeover, exposed origins, WAF settings |
+| `check_secrets` | Leaked keys on a website, in a folder or in Git history (`verify` requires `i_have_permission`) |
 | `check_performance` | Core Web Vitals |
 | `check_coverage` | Unused JavaScript and CSS |
 | `check_mobile_ios` | iPhone/iPad Safari audit |
@@ -369,8 +391,9 @@ Example prompts: *"Audit example.com and tell me what to fix first"*, *"Generate
 
 ```text
 sightline <url> [options]
+sightline secrets <url | folder | repository | git-url> [--fail-on-found] [--json <file>] [--verify --i-own-this]
 
-  --modules <list>     seo,hreflang,links,website,cloudflare  (default: all)
+  --modules <list>     seo,hreflang,links,website,cloudflare,security,secrets  (default: all)
   --pages <n>          Pages to crawl for site-wide SEO checks (default 15)
   --links <n>          Maximum links to status-check (default 150)
   --json <file>        Full report as JSON
