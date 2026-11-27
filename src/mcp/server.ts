@@ -66,6 +66,7 @@ function toolDefs(browser: boolean) {
     { name: 'check_hreflang', title: 'Hreflang audit', description: 'Validate hreflang codes, self-references, x-default and return tags between language versions.', inputSchema: { type: 'object', properties: { url: urlProp }, required: ['url'] } },
     { name: 'check_links', title: 'Broken link check', description: 'Status-check every <a href> on the page: broken links, redirects, empty and unsafe links.', inputSchema: { type: 'object', properties: { url: urlProp, max_links: { type: 'integer', minimum: 10, maximum: 1000 } }, required: ['url'] } },
     { name: 'check_cloudflare', title: 'Cloudflare & DNS audit', description: 'Check Cloudflare proxying, caching, TLS, HSTS, HTTP/3, origin IP exposure, DNSSEC, CAA and email records.', inputSchema: { type: 'object', properties: { url: urlProp }, required: ['url'] } },
+    { name: 'check_cloudflare_security', title: 'Cloudflare security audit', description: 'Check what attackers can see from outside: Content-Security-Policy and other protection headers, security.txt, SPF/DMARC/MTA-STS spoofing protection, subdomain takeover (dangling CNAMEs) and origin servers revealed by certificate-transparency logs. With a Cloudflare API token configured in the app: WAF managed rules, rate limiting, Bot Fight Mode and leaked-credential detection. Read-only: DNS lookups and ordinary GET requests.', inputSchema: { type: 'object', properties: { url: urlProp }, required: ['url'] } },
     { name: 'check_security', title: 'Website security & health', description: 'Check HTTPS, certificate, security headers, cookies, compression, caching and accessibility basics.', inputSchema: { type: 'object', properties: { url: urlProp }, required: ['url'] } },
   ];
   if (browser) {
@@ -83,7 +84,7 @@ function toolDefs(browser: boolean) {
 const SINGLE: Record<string, SL.CategoryKey> = {
   check_seo: 'seo', check_hreflang: 'hreflang', check_links: 'links', check_cloudflare: 'cloudflare',
   check_security: 'website', check_performance: 'performance', check_mobile_ios: 'mobile', check_memory_leaks: 'memory',
-  check_lighthouse: 'lighthouse', check_coverage: 'coverage',
+  check_lighthouse: 'lighthouse', check_coverage: 'coverage', check_cloudflare_security: 'security',
 };
 
 export function startMcpServer(browser: SL.BrowserRunner | null, onClose: () => void = () => process.exit(0)): void {

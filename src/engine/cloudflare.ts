@@ -68,7 +68,7 @@ export interface CloudflareData {
 
 interface CfSetting { id: string; value: unknown }
 
-async function cfApi(token: string, path: string): Promise<{ success: boolean; result: unknown; errors?: { message: string }[] }> {
+export async function cfApi(token: string, path: string): Promise<{ success: boolean; result: unknown; errors?: { message: string }[] }> {
   const r = await fetchUrl(`https://api.cloudflare.com/client/v4${path}`, { headers: { authorization: `Bearer ${token}`, accept: 'application/json' }, timeout: 15000 });
   try { return JSON.parse(r.body); } catch { return { success: false, result: null, errors: [{ message: `HTTP ${r.status}` }] }; }
 }

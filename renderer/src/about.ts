@@ -14,6 +14,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'Checks your Cloudflare and DNS setup: caching, security, encryption and hidden misconfigurations.',
     lighthouse: "Scores the page the way Google Lighthouse does: speed, accessibility, best practices and SEO, on a slowed-down phone.",
     coverage: "Shows how much of the JavaScript and CSS your visitors download is never actually used.",
+    security: 'Looks at your site the way an attacker would: missing protection headers, email spoofing, subdomain takeover, exposed servers and Cloudflare firewall settings.',
   },
   es: {
     seo: 'Comprueba si Google y otros buscadores pueden encontrar, entender y posicionar tus páginas.',
@@ -26,6 +27,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'Revisa tu configuración de Cloudflare y DNS: caché, seguridad, cifrado y errores ocultos.',
     lighthouse: "Puntúa la página como Google Lighthouse: velocidad, accesibilidad, buenas prácticas y SEO, en un móvil ralentizado.",
     coverage: "Muestra cuánto del JavaScript y CSS que descargan tus visitantes nunca se usa.",
+    security: 'Mira tu sitio como lo haría un atacante: cabeceras de protección que faltan, suplantación de correo, secuestro de subdominios, servidores expuestos y el firewall de Cloudflare.',
   },
   fr: {
     seo: 'Vérifie que Google et les autres moteurs peuvent trouver, comprendre et classer vos pages.',
@@ -38,6 +40,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'Vérifie votre configuration Cloudflare et DNS : cache, sécurité, chiffrement et erreurs cachées.',
     lighthouse: "Note la page comme Google Lighthouse : vitesse, accessibilité, bonnes pratiques et SEO, sur un mobile ralenti.",
     coverage: "Montre la part du JavaScript et du CSS téléchargés qui ne sert jamais.",
+    security: 'Regarde votre site comme un attaquant : en-têtes de protection manquants, usurpation d’e-mail, prise de contrôle de sous-domaines, serveurs exposés et pare-feu Cloudflare.',
   },
   de: {
     seo: 'Prüft, ob Google und andere Suchmaschinen deine Seiten finden, verstehen und gut platzieren können.',
@@ -50,6 +53,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'Prüft deine Cloudflare- und DNS-Einrichtung: Caching, Sicherheit, Verschlüsselung.',
     lighthouse: "Bewertet die Seite wie Google Lighthouse: Tempo, Barrierefreiheit, Best Practices und SEO auf einem gedrosselten Handy.",
     coverage: "Zeigt, wie viel des heruntergeladenen JavaScripts und CSS nie benutzt wird.",
+    security: 'Betrachtet deine Website wie ein Angreifer: fehlende Schutz-Header, E-Mail-Spoofing, Subdomain-Übernahme, offene Server und die Cloudflare-Firewall.',
   },
   pt: {
     seo: 'Verifica se o Google e outros buscadores conseguem encontrar, entender e posicionar suas páginas.',
@@ -62,6 +66,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'Verifica sua configuração Cloudflare e DNS: cache, segurança, criptografia.',
     lighthouse: "Pontua a página como o Google Lighthouse: velocidade, acessibilidade, boas práticas e SEO, num celular mais lento.",
     coverage: "Mostra quanto do JavaScript e CSS baixado pelos visitantes nunca é usado.",
+    security: 'Olha o seu site como um atacante: cabeçalhos de proteção ausentes, falsificação de e-mail, sequestro de subdomínios, servidores expostos e o firewall da Cloudflare.',
   },
   it: {
     seo: 'Verifica che Google e gli altri motori di ricerca possano trovare, capire e posizionare le tue pagine.',
@@ -74,6 +79,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'Controlla la configurazione Cloudflare e DNS: cache, sicurezza, crittografia.',
     lighthouse: "Valuta la pagina come Google Lighthouse: velocità, accessibilità, best practice e SEO, su un telefono rallentato.",
     coverage: "Mostra quanto del JavaScript e CSS scaricato non viene mai usato.",
+    security: 'Guarda il sito come farebbe un attaccante: header di protezione mancanti, spoofing delle email, takeover di sottodomini, server esposti e firewall Cloudflare.',
   },
   ru: {
     seo: 'Проверяет, могут ли Google и другие поисковики найти, понять и хорошо ранжировать ваши страницы.',
@@ -86,6 +92,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'Проверяет настройки Cloudflare и DNS: кэш, безопасность, шифрование.',
     lighthouse: "Оценивает страницу как Google Lighthouse: скорость, доступность, рекомендации и SEO на замедленном телефоне.",
     coverage: "Показывает, какая часть загружаемого JavaScript и CSS никогда не используется.",
+    security: 'Смотрит на сайт глазами злоумышленника: защитные заголовки, подделка почты, захват поддоменов, открытые серверы и файрвол Cloudflare.',
   },
   tr: {
     seo: 'Google ve diğer arama motorlarının sayfalarınızı bulup anlayıp sıralayabildiğini kontrol eder.',
@@ -98,6 +105,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'Cloudflare ve DNS kurulumunuzu kontrol eder: önbellek, güvenlik, şifreleme.',
     lighthouse: "Sayfayı Google Lighthouse gibi puanlar: yavaşlatılmış telefonda hız, erişilebilirlik, en iyi uygulamalar ve SEO.",
     coverage: "Ziyaretçilerin indirdiği JavaScript ve CSS’in ne kadarının hiç kullanılmadığını gösterir.",
+    security: 'Sitenize bir saldırgan gibi bakar: eksik koruma başlıkları, e-posta sahteciliği, alt alan adı ele geçirme, açık sunucular ve Cloudflare güvenlik duvarı.',
   },
   ar: {
     seo: 'يتحقق من قدرة Google ومحركات البحث على العثور على صفحاتك وفهمها وترتيبها.',
@@ -110,6 +118,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'يفحص إعدادات Cloudflare وDNS: التخزين المؤقت والأمان والتشفير.',
     lighthouse: "يقيّم الصفحة كما يفعل Google Lighthouse: السرعة وسهولة الوصول وأفضل الممارسات وSEO على هاتف مُبطّأ.",
     coverage: "يوضح كم من JavaScript وCSS الذي يُنزّله الزوار لا يُستخدم أبدًا.",
+    security: 'يفحص موقعك كما يراه المهاجم: رؤوس الحماية الناقصة، انتحال البريد، الاستيلاء على النطاقات الفرعية، الخوادم المكشوفة وجدار حماية Cloudflare.',
   },
   ur: {
     seo: 'جانچتا ہے کہ Google اور دیگر سرچ انجن آپ کے صفحات کو ڈھونڈ، سمجھ اور رینک کر سکتے ہیں یا نہیں۔',
@@ -122,6 +131,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'آپ کا Cloudflare اور DNS سیٹ اپ جانچتا ہے: کیشنگ، سیکیورٹی اور انکرپشن۔',
     lighthouse: "صفحے کو Google Lighthouse کی طرح جانچتا ہے: سست فون پر رفتار، رسائی، بہترین طریقے اور SEO۔",
     coverage: "دکھاتا ہے کہ وزیٹرز جو JavaScript اور CSS ڈاؤن لوڈ کرتے ہیں اس کا کتنا حصہ کبھی استعمال نہیں ہوتا۔",
+    security: 'آپ کی سائٹ کو حملہ آور کی نظر سے دیکھتا ہے: حفاظتی ہیڈرز، ای میل جعل سازی، سب ڈومین پر قبضہ، کھلے سرورز اور Cloudflare فائر وال۔',
   },
   hi: {
     seo: 'जाँचता है कि Google और अन्य सर्च इंजन आपके पेज ढूँढ, समझ और रैंक कर पाते हैं या नहीं।',
@@ -134,6 +144,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'आपका Cloudflare और DNS सेटअप जाँचता है: कैशिंग, सुरक्षा और एन्क्रिप्शन।',
     lighthouse: "पेज को Google Lighthouse की तरह स्कोर करता है: धीमे फ़ोन पर गति, सुलभता, सर्वोत्तम प्रथाएँ और SEO।",
     coverage: "दिखाता है कि विज़िटर जो JavaScript और CSS डाउनलोड करते हैं उसका कितना हिस्सा कभी इस्तेमाल नहीं होता।",
+    security: 'आपकी साइट को हमलावर की नज़र से देखता है: सुरक्षा हेडर, ईमेल स्पूफ़िंग, सबडोमेन टेकओवर, खुले सर्वर और Cloudflare फ़ायरवॉल।',
   },
   zh: {
     seo: '检查 Google 等搜索引擎能否找到、理解并良好排名你的页面。',
@@ -146,6 +157,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: '检查 Cloudflare 与 DNS 配置：缓存、安全、加密及隐藏的配置问题。',
     lighthouse: "像 Google Lighthouse 一样为页面打分：在降速手机上测速度、无障碍、最佳实践和 SEO。",
     coverage: "显示访客下载的 JavaScript 和 CSS 中有多少从未被使用。",
+    security: '以攻击者的视角检查网站：缺失的安全响应头、邮件伪造、子域名接管、暴露的源站以及 Cloudflare 防火墙设置。',
   },
   ja: {
     seo: 'Google などの検索エンジンがページを見つけ、理解し、上位に表示できるかを確認します。',
@@ -158,6 +170,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'Cloudflare と DNS の設定（キャッシュ、セキュリティ、暗号化）を確認します。',
     lighthouse: "Google Lighthouse と同じ方法で採点：低速スマホでの速度、ユーザー補助、おすすめの方法、SEO。",
     coverage: "訪問者がダウンロードする JavaScript と CSS のうち、実際に使われない量を示します。",
+    security: '攻撃者の視点でサイトを確認します：保護ヘッダー、メールのなりすまし、サブドメイン乗っ取り、露出したサーバー、Cloudflare ファイアウォール。',
   },
   ko: {
     seo: 'Google 등 검색엔진이 페이지를 찾고 이해하고 상위에 노출할 수 있는지 확인합니다.',
@@ -170,6 +183,7 @@ const DESC: Record<string, Desc> = {
     cloudflare: 'Cloudflare와 DNS 설정(캐시, 보안, 암호화)을 확인합니다.',
     lighthouse: "Google Lighthouse처럼 페이지를 채점합니다: 느린 휴대폰에서 속도, 접근성, 권장사항, SEO.",
     coverage: "방문자가 내려받는 JavaScript와 CSS 중 실제로 쓰이지 않는 양을 보여줍니다.",
+    security: '공격자의 시선으로 사이트를 점검합니다: 보호 헤더, 이메일 스푸핑, 서브도메인 탈취, 노출된 서버, Cloudflare 방화벽.',
   },
 };
 
@@ -214,6 +228,10 @@ export const DETAIL: Record<SL.CategoryKey, { checks: string[]; why: string }> =
   cloudflare: {
     checks: ['Whether traffic really goes through Cloudflare', 'Caching, HTTP/3, compression and TLS settings', 'Whether your real server IP is exposed', 'DNSSEC, CAA and email security records'],
     why: 'A half-configured CDN gives a false sense of speed and security.',
+  },
+  security: {
+    checks: ['Protection headers: Content-Security-Policy, Referrer-Policy, Permissions-Policy, nosniff', 'Email spoofing: SPF, DMARC and MTA-STS', 'Subdomains that point at deleted services (takeover risk)', 'Servers that certificate logs reveal outside Cloudflare', 'With an API token: WAF rules, rate limiting, Bot Fight Mode and leaked-password detection'],
+    why: 'Attackers start with what anyone can see from outside. These are the gaps they check first.',
   },
 };
 
