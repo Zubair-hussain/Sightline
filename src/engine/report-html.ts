@@ -7,7 +7,7 @@ const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '
 export const CATEGORY_NAMES: Record<SL.CategoryKey, string> = {
   seo: 'SEO', hreflang: 'Hreflang', links: 'Links', website: 'Website health', performance: 'Performance',
   cloudflare: 'Cloudflare & DNS', mobile: 'iPhone & iPad', memory: 'Memory leaks',
-  lighthouse: 'Lighthouse', coverage: 'Code coverage', security: 'Cloudflare security',
+  lighthouse: 'Lighthouse', coverage: 'Code coverage', security: 'Cloudflare security', secrets: 'Exposed secrets',
 };
 
 const CATEGORY_DESC: Record<SL.CategoryKey, string> = {
@@ -22,9 +22,10 @@ const CATEGORY_DESC: Record<SL.CategoryKey, string> = {
   lighthouse: 'Performance, Accessibility, Best Practices and SEO scores on a throttled device, scored like Lighthouse.',
   coverage: 'How much of the downloaded JavaScript and CSS the page actually uses.',
   security: 'What attackers can see and reach from outside: security headers, email spoofing, subdomain takeover, exposed origin servers and Cloudflare WAF protection.',
+  secrets: 'API keys, passwords and private files that anyone can download from the site, its scripts and source maps.',
 };
 
-const ORDER: SL.CategoryKey[] = ['lighthouse', 'seo', 'performance', 'coverage', 'mobile', 'memory', 'website', 'links', 'hreflang', 'cloudflare', 'security'];
+const ORDER: SL.CategoryKey[] = ['lighthouse', 'seo', 'performance', 'coverage', 'mobile', 'memory', 'website', 'links', 'hreflang', 'cloudflare', 'security', 'secrets'];
 const RANK: Record<SL.Status, number> = { fail: 0, warn: 1, pass: 2, info: 3 };
 const STATUS_LABEL: Record<SL.Status, string> = { pass: 'Passed', warn: 'Warning', fail: 'Failed', info: 'Info' };
 
@@ -148,7 +149,7 @@ export function renderHtmlReport(report: SL.Report, options: ReportOptions = {})
         </td></tr>`).join('');
     const mem = c.key === 'memory' ? memoryFigure(c.data as unknown as SL.MemoryData) : '';
     const lh = c.key === 'lighthouse' ? lighthouseGauges(c.data as unknown as SL.LighthouseData) : '';
-    const cov = c.key === 'coverage' ? coverageSection(c.data as unknown as SL.CoverageData) : '';
+    const cov = c.key === 'coverage' ? coverageSection(c.data as unknown as SL.CoverageData) : c.key === 'secrets' ? secretsSection(c.data as unknown as SecretsReportData) : '';
     const vitals = c.key === 'performance' && perf ? `<div class="vitals">${[
       ['LCP', perf.lcp == null ? '—' : `${(perf.lcp / 1000).toFixed(2)} s`],
       ['FCP', perf.fcp == null ? '—' : `${(perf.fcp / 1000).toFixed(2)} s`],
@@ -261,6 +262,10 @@ export function renderHtmlReport(report: SL.Report, options: ReportOptions = {})
   .cov-legend i { display:inline-block; width:8px; height:8px; border-radius:2px; margin:0 4px 0 10px; vertical-align:0; }
   .cov-wins { margin:0 0 14px; padding-left:18px; font-size:12px; break-inside:avoid; }
   .cov-wins li { margin:3px 0; word-break:break-all; }
+  .sev { font-size:9px; font-weight:700; text-transform:uppercase; border-radius:4px; padding:1px 5px; color:#fff; background:#8e8e93; }
+  .sev-critical { background:#d93025; } .sev-high { background:#e8710a; } .sev-medium { background:#c77700; } .sev-low { background:#8e8e93; }
+  b.sev-critical { background:none; color:#d93025; }
+  .secrets code { font-size:11px; }
   .cov .tag, .cov-wins .tag { font-size:9px; font-weight:700; text-transform:uppercase; color:var(--muted); border:1px solid var(--hair); border-radius:4px; padding:0 4px; margin-left:4px; }
   .tp td { font-size:11px; }
   .tp .st-pass { color:#1f9d55; font-weight:700; } .tp .st-fail { color:#d93025; font-weight:700; } .tp .st-not-run { color:var(--muted); } .tp .st-blocked { color:#c77700; font-weight:700; }
@@ -348,6 +353,24 @@ export function coverageSection(d: SL.CoverageData | undefined): string {
   const rows = d.files.slice(0, LIMIT).map((f) => `<tr><td>${f.type.toUpperCase()}</td><td>${esc(name(f.url))}${f.firstParty ? '' : '<span class="tag">3rd-party</span>'}</td><td>${size(f.total)}</td><td>${size(f.unused)}</td><td><div class="covbar"><i style="width:${f.pct}%"></i></div> ${f.pct}%</td></tr>`).join('');
   const more = d.files.length > LIMIT ? `<tr><td colspan="5" class="muted">… and ${d.files.length - LIMIT} more file(s) with less unused code.</td></tr>` : '';
   return `${cards}${split}${winList}<h3>Every file</h3><table class="cov"><tr><th>Type</th><th>File</th><th>Size</th><th>Unused</th><th>Unused share</th></tr>${rows}${more}</table>`;
+}
+
+interface SecretsReportData {
+  findings?: { name: string; severity: string; masked: string; location: { url?: string; file?: string; line?: number; commit?: string }; alsoAt: unknown[]; verified: string }[];
+  verification?: 'on' | 'off';
+}
+
+/** Table of found secrets for the report. Values are already masked by the engine. */
+export function secretsSection(d: SecretsReportData | undefined): string {
+  const f = d?.findings ?? [];
+  if (!f.length) return '';
+  const state: Record<string, string> = { verified: '<b class="sev-critical">Confirmed live</b>', invalid: 'No longer works', unverified: 'Could not confirm', 'not-checked': d?.verification === 'on' ? 'Not testable' : 'Not tested' };
+  const where = (l: { url?: string; file?: string; line?: number; commit?: string }) => {
+    const w = l.file ?? l.url ?? '';
+    return `${w.length > 70 ? '…' + w.slice(-68) : w}${l.line ? `:${l.line}` : ''}${l.commit ? ` @ ${l.commit.slice(0, 8)}` : ''}`;
+  };
+  const rows = f.slice(0, 40).map((x) => `<tr><td><span class="sev sev-${esc(x.severity)}">${esc(x.severity)}</span></td><td>${esc(x.name)}</td><td><code>${esc(x.masked)}</code></td><td>${esc(where(x.location))}${x.alsoAt.length ? ` <span class="muted">+${x.alsoAt.length}</span>` : ''}</td><td>${state[x.verified] ?? esc(x.verified)}</td></tr>`).join('');
+  return `<table class="cov secrets"><tr><th>Severity</th><th>What</th><th>Value (masked)</th><th>Where</th><th>Live?</th></tr>${rows}${f.length > 40 ? `<tr><td colspan="5" class="muted">… and ${f.length - 40} more.</td></tr>` : ''}</table>`;
 }
 
 function testPlan(report: SL.Report): string {

@@ -15,6 +15,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "Scores the page the way Google Lighthouse does: speed, accessibility, best practices and SEO, on a slowed-down phone.",
     coverage: "Shows how much of the JavaScript and CSS your visitors download is never actually used.",
     security: 'Looks at your site the way an attacker would: missing protection headers, email spoofing, subdomain takeover, exposed servers and Cloudflare firewall settings.',
+    secrets: 'Looks for API keys, passwords and private files that anyone can download from your site, its scripts and source maps.',
   },
   es: {
     seo: 'Comprueba si Google y otros buscadores pueden encontrar, entender y posicionar tus páginas.',
@@ -28,6 +29,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "Puntúa la página como Google Lighthouse: velocidad, accesibilidad, buenas prácticas y SEO, en un móvil ralentizado.",
     coverage: "Muestra cuánto del JavaScript y CSS que descargan tus visitantes nunca se usa.",
     security: 'Mira tu sitio como lo haría un atacante: cabeceras de protección que faltan, suplantación de correo, secuestro de subdominios, servidores expuestos y el firewall de Cloudflare.',
+    secrets: 'Busca claves de API, contraseñas y archivos privados que cualquiera puede descargar de tu sitio, sus scripts y sus source maps.',
   },
   fr: {
     seo: 'Vérifie que Google et les autres moteurs peuvent trouver, comprendre et classer vos pages.',
@@ -41,6 +43,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "Note la page comme Google Lighthouse : vitesse, accessibilité, bonnes pratiques et SEO, sur un mobile ralenti.",
     coverage: "Montre la part du JavaScript et du CSS téléchargés qui ne sert jamais.",
     security: 'Regarde votre site comme un attaquant : en-têtes de protection manquants, usurpation d’e-mail, prise de contrôle de sous-domaines, serveurs exposés et pare-feu Cloudflare.',
+    secrets: 'Recherche les clés d’API, mots de passe et fichiers privés que n’importe qui peut télécharger depuis votre site, ses scripts et ses source maps.',
   },
   de: {
     seo: 'Prüft, ob Google und andere Suchmaschinen deine Seiten finden, verstehen und gut platzieren können.',
@@ -54,6 +57,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "Bewertet die Seite wie Google Lighthouse: Tempo, Barrierefreiheit, Best Practices und SEO auf einem gedrosselten Handy.",
     coverage: "Zeigt, wie viel des heruntergeladenen JavaScripts und CSS nie benutzt wird.",
     security: 'Betrachtet deine Website wie ein Angreifer: fehlende Schutz-Header, E-Mail-Spoofing, Subdomain-Übernahme, offene Server und die Cloudflare-Firewall.',
+    secrets: 'Sucht nach API-Schlüsseln, Passwörtern und privaten Dateien, die jeder von deiner Website, ihren Skripten und Source Maps laden kann.',
   },
   pt: {
     seo: 'Verifica se o Google e outros buscadores conseguem encontrar, entender e posicionar suas páginas.',
@@ -67,6 +71,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "Pontua a página como o Google Lighthouse: velocidade, acessibilidade, boas práticas e SEO, num celular mais lento.",
     coverage: "Mostra quanto do JavaScript e CSS baixado pelos visitantes nunca é usado.",
     security: 'Olha o seu site como um atacante: cabeçalhos de proteção ausentes, falsificação de e-mail, sequestro de subdomínios, servidores expostos e o firewall da Cloudflare.',
+    secrets: 'Procura chaves de API, senhas e arquivos privados que qualquer pessoa pode baixar do seu site, dos scripts e dos source maps.',
   },
   it: {
     seo: 'Verifica che Google e gli altri motori di ricerca possano trovare, capire e posizionare le tue pagine.',
@@ -80,6 +85,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "Valuta la pagina come Google Lighthouse: velocità, accessibilità, best practice e SEO, su un telefono rallentato.",
     coverage: "Mostra quanto del JavaScript e CSS scaricato non viene mai usato.",
     security: 'Guarda il sito come farebbe un attaccante: header di protezione mancanti, spoofing delle email, takeover di sottodomini, server esposti e firewall Cloudflare.',
+    secrets: 'Cerca chiavi API, password e file privati che chiunque può scaricare dal sito, dai suoi script e dalle source map.',
   },
   ru: {
     seo: 'Проверяет, могут ли Google и другие поисковики найти, понять и хорошо ранжировать ваши страницы.',
@@ -93,6 +99,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "Оценивает страницу как Google Lighthouse: скорость, доступность, рекомендации и SEO на замедленном телефоне.",
     coverage: "Показывает, какая часть загружаемого JavaScript и CSS никогда не используется.",
     security: 'Смотрит на сайт глазами злоумышленника: защитные заголовки, подделка почты, захват поддоменов, открытые серверы и файрвол Cloudflare.',
+    secrets: 'Ищет API-ключи, пароли и закрытые файлы, которые любой может скачать с сайта, из его скриптов и source maps.',
   },
   tr: {
     seo: 'Google ve diğer arama motorlarının sayfalarınızı bulup anlayıp sıralayabildiğini kontrol eder.',
@@ -106,6 +113,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "Sayfayı Google Lighthouse gibi puanlar: yavaşlatılmış telefonda hız, erişilebilirlik, en iyi uygulamalar ve SEO.",
     coverage: "Ziyaretçilerin indirdiği JavaScript ve CSS’in ne kadarının hiç kullanılmadığını gösterir.",
     security: 'Sitenize bir saldırgan gibi bakar: eksik koruma başlıkları, e-posta sahteciliği, alt alan adı ele geçirme, açık sunucular ve Cloudflare güvenlik duvarı.',
+    secrets: 'Sitenizden, betiklerinden ve source map dosyalarından herkesin indirebileceği API anahtarlarını, parolaları ve özel dosyaları arar.',
   },
   ar: {
     seo: 'يتحقق من قدرة Google ومحركات البحث على العثور على صفحاتك وفهمها وترتيبها.',
@@ -119,6 +127,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "يقيّم الصفحة كما يفعل Google Lighthouse: السرعة وسهولة الوصول وأفضل الممارسات وSEO على هاتف مُبطّأ.",
     coverage: "يوضح كم من JavaScript وCSS الذي يُنزّله الزوار لا يُستخدم أبدًا.",
     security: 'يفحص موقعك كما يراه المهاجم: رؤوس الحماية الناقصة، انتحال البريد، الاستيلاء على النطاقات الفرعية، الخوادم المكشوفة وجدار حماية Cloudflare.',
+    secrets: 'يبحث عن مفاتيح API وكلمات المرور والملفات الخاصة التي يمكن لأي شخص تنزيلها من موقعك ونصوصه البرمجية وملفات source map.',
   },
   ur: {
     seo: 'جانچتا ہے کہ Google اور دیگر سرچ انجن آپ کے صفحات کو ڈھونڈ، سمجھ اور رینک کر سکتے ہیں یا نہیں۔',
@@ -132,6 +141,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "صفحے کو Google Lighthouse کی طرح جانچتا ہے: سست فون پر رفتار، رسائی، بہترین طریقے اور SEO۔",
     coverage: "دکھاتا ہے کہ وزیٹرز جو JavaScript اور CSS ڈاؤن لوڈ کرتے ہیں اس کا کتنا حصہ کبھی استعمال نہیں ہوتا۔",
     security: 'آپ کی سائٹ کو حملہ آور کی نظر سے دیکھتا ہے: حفاظتی ہیڈرز، ای میل جعل سازی، سب ڈومین پر قبضہ، کھلے سرورز اور Cloudflare فائر وال۔',
+    secrets: 'API کلیدیں، پاس ورڈ اور نجی فائلیں تلاش کرتا ہے جو کوئی بھی آپ کی سائٹ، اس کی اسکرپٹس اور source maps سے ڈاؤن لوڈ کر سکتا ہے۔',
   },
   hi: {
     seo: 'जाँचता है कि Google और अन्य सर्च इंजन आपके पेज ढूँढ, समझ और रैंक कर पाते हैं या नहीं।',
@@ -145,6 +155,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "पेज को Google Lighthouse की तरह स्कोर करता है: धीमे फ़ोन पर गति, सुलभता, सर्वोत्तम प्रथाएँ और SEO।",
     coverage: "दिखाता है कि विज़िटर जो JavaScript और CSS डाउनलोड करते हैं उसका कितना हिस्सा कभी इस्तेमाल नहीं होता।",
     security: 'आपकी साइट को हमलावर की नज़र से देखता है: सुरक्षा हेडर, ईमेल स्पूफ़िंग, सबडोमेन टेकओवर, खुले सर्वर और Cloudflare फ़ायरवॉल।',
+    secrets: 'ऐसी API कुंजियाँ, पासवर्ड और निजी फ़ाइलें खोजता है जिन्हें कोई भी आपकी साइट, उसकी स्क्रिप्ट और source maps से डाउनलोड कर सकता है।',
   },
   zh: {
     seo: '检查 Google 等搜索引擎能否找到、理解并良好排名你的页面。',
@@ -158,6 +169,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "像 Google Lighthouse 一样为页面打分：在降速手机上测速度、无障碍、最佳实践和 SEO。",
     coverage: "显示访客下载的 JavaScript 和 CSS 中有多少从未被使用。",
     security: '以攻击者的视角检查网站：缺失的安全响应头、邮件伪造、子域名接管、暴露的源站以及 Cloudflare 防火墙设置。',
+    secrets: '查找任何人都能从网站、脚本和 source map 中下载到的 API 密钥、密码和私有文件。',
   },
   ja: {
     seo: 'Google などの検索エンジンがページを見つけ、理解し、上位に表示できるかを確認します。',
@@ -171,6 +183,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "Google Lighthouse と同じ方法で採点：低速スマホでの速度、ユーザー補助、おすすめの方法、SEO。",
     coverage: "訪問者がダウンロードする JavaScript と CSS のうち、実際に使われない量を示します。",
     security: '攻撃者の視点でサイトを確認します：保護ヘッダー、メールのなりすまし、サブドメイン乗っ取り、露出したサーバー、Cloudflare ファイアウォール。',
+    secrets: 'サイトやスクリプト、ソースマップから誰でもダウンロードできる API キー、パスワード、非公開ファイルを探します。',
   },
   ko: {
     seo: 'Google 등 검색엔진이 페이지를 찾고 이해하고 상위에 노출할 수 있는지 확인합니다.',
@@ -184,6 +197,7 @@ const DESC: Record<string, Desc> = {
     lighthouse: "Google Lighthouse처럼 페이지를 채점합니다: 느린 휴대폰에서 속도, 접근성, 권장사항, SEO.",
     coverage: "방문자가 내려받는 JavaScript와 CSS 중 실제로 쓰이지 않는 양을 보여줍니다.",
     security: '공격자의 시선으로 사이트를 점검합니다: 보호 헤더, 이메일 스푸핑, 서브도메인 탈취, 노출된 서버, Cloudflare 방화벽.',
+    secrets: '누구나 사이트, 스크립트, 소스 맵에서 내려받을 수 있는 API 키, 비밀번호, 비공개 파일을 찾습니다.',
   },
 };
 
@@ -232,6 +246,10 @@ export const DETAIL: Record<SL.CategoryKey, { checks: string[]; why: string }> =
   security: {
     checks: ['Protection headers: Content-Security-Policy, Referrer-Policy, Permissions-Policy, nosniff', 'Email spoofing: SPF, DMARC and MTA-STS', 'Subdomains that point at deleted services (takeover risk)', 'Servers that certificate logs reveal outside Cloudflare', 'With an API token: WAF rules, rate limiting, Bot Fight Mode and leaked-password detection'],
     why: 'Attackers start with what anyone can see from outside. These are the gaps they check first.',
+  },
+  secrets: {
+    checks: ['About 50 kinds of API keys and tokens (AWS, GitHub, Stripe, OpenAI, Anthropic, Slack, SendGrid…), private keys and database passwords', 'The page, every same-site script and public source maps, including keys hidden with base64 or URL encoding', 'Files published by mistake: .env, .git, .npmrc, backups', 'Optional, only for your own site: a read-only check with each provider whether a key still works'],
+    why: 'Bots scan new sites for leaked keys within minutes. One live key can mean a huge cloud bill, stolen data or email sent in your name.',
   },
 };
 
