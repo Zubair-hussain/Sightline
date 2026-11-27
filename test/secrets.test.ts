@@ -186,3 +186,13 @@ test('private keys: real PEM layouts are found, source code that mentions the ma
   const detectorSource = await fs.readFile(path.join(__dirname, '../../src/engine/secrets/detectors.ts'), 'utf8');
   assert.deepEqual(scanText(detectorSource, at).map((f) => f.detector), [], 'the scanner must not flag its own patterns');
 });
+
+test('the private-key pattern stays fast on input crafted to make it backtrack (CodeQL js/redos)', () => {
+  const begin = ['-----BEGIN', ' PRIVATE KEY-----'].join('');
+  for (const attack of [`${begin}\n${'-: \n'.repeat(20000)}`, `${begin}\n${'a: x\n'.repeat(20000)}`, `${begin}\n${'A: \n'.repeat(20000)}`]) {
+    const started = process.hrtime.bigint();
+    scanText(attack, at);
+    const ms = Number(process.hrtime.bigint() - started) / 1e6;
+    assert.ok(ms < 1500, `took ${ms.toFixed(0)} ms`);
+  }
+});
