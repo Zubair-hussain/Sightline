@@ -33,6 +33,23 @@ function canonicalRedirect(request, url, env) {
   return secure(Response.redirect(target.toString(), ['GET', 'HEAD'].includes(request.method) ? 301 : 308), 'public, max-age=86400');
 }
 
+/** Whether a release asset exists (GitHub answers 302 to the file, or 404). Cached for 5 minutes. */
+async function assetPublished(asset, context) {
+  const key = new Request(`https://asset-check.internal/${encodeURIComponent(asset)}`);
+  const store = globalThis.caches?.default;
+  const cached = store ? await store.match(key).catch(() => undefined) : undefined;
+  if (cached) return (await cached.text()) === '1';
+  let ok = true;
+  try {
+    const r = await fetch(asset, { method: 'HEAD', redirect: 'manual' });
+    ok = r.status >= 200 && r.status < 400;
+  } catch {
+    ok = true; // if GitHub cannot be reached, let the browser try the download itself
+  }
+  if (store) context.waitUntil?.(store.put(key, new Response(ok ? '1' : '0', { headers: { 'cache-control': 'max-age=300' } })).catch(() => undefined));
+  return ok;
+}
+
 export default {
   async fetch(request, env, context) {
     const url = new URL(request.url);
@@ -58,7 +75,11 @@ export default {
       if (!['GET', 'HEAD'].includes(request.method)) return secure(json({ error: 'Method not allowed' }, 405, { allow: 'GET, HEAD' }));
       const file = DOWNLOADS[url.pathname.slice('/download/'.length)];
       if (!file) return secure(json({ error: 'Unknown download' }, 404));
-      return secure(Response.redirect(`https://github.com/Zubair-hussain/Sightline/releases/latest/download/${file}`, 302), 'public, max-age=300');
+      const asset = `https://github.com/Zubair-hussain/Sightline/releases/latest/download/${file}`;
+      // Never send visitors to GitHub's 404: when this installer is not published (yet), go back to
+      // the download section, which explains that the installers are being prepared.
+      if (!(await assetPublished(asset, context))) return secure(Response.redirect(`${url.origin}/?download=unavailable#download`, 302), 'no-store');
+      return secure(Response.redirect(asset, 302), 'public, max-age=300');
     }
     if (!['GET', 'HEAD'].includes(request.method)) return secure(json({ error: 'Method not allowed' }, 405, { allow: 'GET, HEAD' }));
     // Serve the shared browser UI at /app without forwarding any frontend traffic to replicas.
