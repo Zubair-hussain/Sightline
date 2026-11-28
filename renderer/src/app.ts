@@ -4,8 +4,9 @@ import { t, setLanguage, resolveLanguage, LANGUAGES, currentLocale, type Key } f
 import { describe, DETAIL, DESKTOP_ONLY } from './about.js';
 import { confirmMemoryTest, stepRisk } from './consent.js';
 import { renderTestCases } from './testcases-view.js';
+import { ensureTermsAccepted, maybeShowUpdate, termsView, whatsNewView } from './updates-ui.js';
 
-type View = 'home' | 'running' | 'report' | 'history' | 'settings';
+type View = 'home' | 'running' | 'report' | 'history' | 'settings' | 'whatsnew' | 'terms';
 type Filter = 'all' | 'issues' | 'pass';
 
 const ORDER: SL.CategoryKey[] = ['lighthouse', 'seo', 'performance', 'coverage', 'mobile', 'memory', 'website', 'links', 'hreflang', 'cloudflare', 'security', 'secrets'];
@@ -75,7 +76,10 @@ function render(): void {
     const cur = b.dataset.go === state.view || (b.dataset.go === 'home' && (state.view === 'report' || state.view === 'running'));
     if (cur) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
-  ({ home: renderHome, running: renderRunning, report: renderReport, history: renderHistory, settings: renderSettings })[state.view]();
+  ({
+    home: renderHome, running: renderRunning, report: renderReport, history: renderHistory, settings: renderSettings,
+    whatsnew: () => $view.append(whatsNewView(api, state.info!)), terms: () => $view.append(termsView(api)),
+  })[state.view]();
 }
 
 // ---------- home ----------
@@ -698,6 +702,9 @@ async function boot(): Promise<void> {
   });
   applyTheme();
   applyLanguage();
+  // On the website the terms live at /terms and accepted before download; the web app has no Terms
+  // gate or update check (it is always the latest version).
+  if (state.info.web) document.querySelectorAll('[data-desktop-only]').forEach((el) => el.remove());
   const fromLink = new URLSearchParams(location.search).get('url');
   if (fromLink) {
     history.replaceState(null, '', location.pathname);
@@ -705,6 +712,11 @@ async function boot(): Promise<void> {
     return;
   }
   render();
+  if (!state.info.web) {
+    // Desktop: accept the current terms first, then offer a newer release if there is one.
+    state.settings = await ensureTermsAccepted(api, state.settings!);
+    void maybeShowUpdate(api, state.settings);
+  }
 }
 
 void boot();
