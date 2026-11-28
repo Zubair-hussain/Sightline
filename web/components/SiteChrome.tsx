@@ -27,7 +27,7 @@ export function SiteFooter({ base = '/' }: { base?: '' | '/' }) {
       <div className="inner">
         <div className="legal">
           <span>Sightline — open-source website audits for Windows, macOS, Linux and the web.</span>
-          <span><a href="/app">Web app</a> · <a href={`${base}#download`}>Download</a> · <a href="/blogs">Blog</a> · <a href={REPO_URL}>GitHub</a> · <a href="/llms.txt">llms.txt</a></span>
+          <span><a href="/app">Web app</a> · <a href={`${base}#download`}>Download</a> · <a href="/blogs">Blog</a> · <a href="/terms">Terms</a> · <a href={REPO_URL}>GitHub</a> · <a href="/llms.txt">llms.txt</a></span>
         </div>
         <p className="muted">Scores are heuristics. Verify critical findings before acting on them. Lighthouse is a trademark of Google LLC; Sightline is not affiliated with Google.</p>
       </div>
