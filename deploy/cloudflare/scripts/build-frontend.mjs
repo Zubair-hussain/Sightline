@@ -35,6 +35,8 @@ await cp(path.join(web, '.next/server/app/_not-found.html'), path.join(output, '
 for (const file of ['robots.txt', 'sitemap.xml']) {
   await cp(path.join(web, '.next/server/app', `${file}.body`), path.join(output, file));
 }
+// Other pre-rendered pages: Cloudflare serves /terms from terms.html.
+for (const pageFile of ['terms.html']) await cp(path.join(web, '.next/server/app', pageFile), path.join(output, pageFile));
 // Blog: the index and every post pre-rendered from the Blogger API at build time.
 // Cloudflare serves /blogs from blogs.html and /blogs/2026/11/post from blogs/2026/11/post.html.
 const appDir = path.join(web, '.next/server/app');
