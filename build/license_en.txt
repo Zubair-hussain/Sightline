@@ -1,0 +1,64 @@
+# Sightline terms of use
+
+Version: 2026-11-28
+
+These terms apply to everything called Sightline: the desktop app for Windows, macOS and Linux, the web app at sightaud.com, the command-line tool and the MCP server for AI apps. By downloading, installing or using Sightline you agree to them. If you do not agree, do not install or use Sightline.
+
+## 1. Sightline is new software
+
+Sightline is new and still being developed. Audits can be wrong or incomplete, features can change, and the app can contain bugs or fail to run on some computers. Scores are estimates: check any important finding yourself before you act on it.
+
+## 2. Tell us when something is wrong
+
+If something does not work, a result looks wrong, or you notice anything unusual, please tell us so we can fix it:
+
+- Bugs and wrong results: https://github.com/Zubair-hussain/Sightline/issues
+- Questions and ideas: https://github.com/Zubair-hussain/Sightline/discussions
+- Security problems: report them privately as described in https://github.com/Zubair-hussain/Sightline/blob/main/SECURITY.md and do not post them in public.
+
+## 3. What Sightline does, and does not do, on your computer
+
+- It does not access your other apps. Sightline does not read, change or control other programs on your computer, their data, your web browser, or your browser's logins, cookies or saved passwords.
+- Its window is locked down. The app window runs sandboxed and refuses requests for the camera, microphone, location, notifications, clipboard and similar permissions.
+- It opens only the websites you ask it to audit, in its own private built-in browser with no logins or cookies. To run the checks it also contacts DNS servers, public certificate-transparency logs and, if you add a token, the Cloudflare API.
+- It reads files only when you choose them: a folder or code repository you ask it to scan for leaked secrets, and the reports and exports you save.
+- AI apps can use Sightline only if you add it to them yourself (the MCP server).
+- The memory test interacts with a website only after you confirm you own it or have permission to test it. Checking whether a leaked key still works also needs that confirmation.
+- Your data stays on your computer. Audit history and settings are stored locally. A Cloudflare API token is stored encrypted by your operating system's keychain when it is available.
+- The desktop app has no ads and no analytics.
+
+## 4. Use Sightline responsibly
+
+Only audit websites and scan code that you own or are allowed to test. Do not use Sightline to attack, overload or get into systems or accounts without permission, or to use keys that belong to someone else.
+
+## 5. Windows, macOS and Linux
+
+- Windows: the installer may not be code-signed yet, so Windows SmartScreen can show "Windows protected your PC". Only choose More info → Run anyway if you downloaded Sightline from sightaud.com or from the official GitHub releases page.
+- macOS: if the app is not notarized yet, macOS can refuse to open it the first time. Right-click the app and choose Open, or go to System Settings → Privacy & Security → Open Anyway.
+- Linux: make the AppImage executable before running it (chmod +x), or install the .deb or .rpm package with your package manager.
+
+On every system, download Sightline only from sightaud.com or https://github.com/Zubair-hussain/Sightline/releases.
+
+## 6. Updates and what's new
+
+When it starts, at most once a day, Sightline asks GitHub whether a newer version has been released. This request contains no personal data beyond what any web request includes. If there is a new version, Sightline shows what is new and lets you choose whether to download it. It never installs anything by itself. Release notes for every version are in the app's What's new tab.
+
+## 7. No warranty
+
+Sightline is free and open source under the MIT License. It is provided "as is", without warranty of any kind, express or implied, including the warranties of merchantability, fitness for a particular purpose and non-infringement.
+
+## 8. We are not responsible for losses
+
+To the fullest extent the law allows, the authors and contributors of Sightline are not responsible or liable for any loss or damage of any kind that results from downloading, installing or using Sightline, or from relying on its results. This includes lost or damaged data, lost income, profit or search rankings, business interruption, damage to your computer, devices or websites, and security incidents. You download, install and use Sightline at your own risk. Nothing in these terms limits liability that cannot be limited by law.
+
+## 9. The website, ads and analytics
+
+sightaud.com shows ads from Google AdSense and measures visits with Google Analytics and Google Tag Manager. Visitors in the European Economic Area, the United Kingdom and Switzerland are asked for consent before these use cookies.
+
+## 10. Changes to these terms
+
+We may update these terms. When we do, the version date at the top changes and the desktop app asks you to accept the new version before you continue.
+
+## 11. Contact
+
+Use GitHub Issues or Discussions (links in section 2). For security problems, follow SECURITY.md.
