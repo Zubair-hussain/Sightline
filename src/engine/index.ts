@@ -11,7 +11,7 @@ import { auditSecrets } from './secrets/website';
 import { resolveBrand } from './brand';
 import { generateTestCases } from './testcases';
 
-export const VERSION = '1.0.0';
+export const VERSION = '1.1.0';
 
 export const ALL_MODULES: SL.CategoryKey[] = ['seo', 'hreflang', 'links', 'website', 'performance', 'lighthouse', 'coverage', 'cloudflare', 'security', 'secrets', 'mobile', 'memory'];
 export const BROWSER_MODULES: SL.CategoryKey[] = ['performance', 'lighthouse', 'coverage', 'mobile', 'memory'];
