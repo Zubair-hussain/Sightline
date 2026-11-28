@@ -179,9 +179,19 @@ test('the canonical host, workers.dev and local development are not redirected',
   assert.equal((await worker.fetch(new Request('http://sightaud.com/'), { ASSETS: env.ASSETS }, {})).status, 200, 'no CANONICAL_HOST, no redirect');
 });
 
-test('Cloudflare downloads only redirect to known release filenames', async () => {
+test('Cloudflare downloads redirect to a published installer and only to known filenames', async () => {
+  globalThis.fetch = async (url, init) => { calls.push([String(url), init?.method]); return new Response(null, { status: 302, headers: { location: 'https://objects.example/x' } }); };
   const response = await worker.fetch(new Request('https://edge.example/download/windows'), {}, {});
   assert.equal(response.status, 302);
-  assert.match(response.headers.get('location'), /Sightline-Setup-x64.exe$/);
+  assert.match(response.headers.get('location'), /releases\/latest\/download\/Sightline-Setup-x64\.exe$/);
+  assert.deepEqual(calls[0], ['https://github.com/Zubair-hussain/Sightline/releases/latest/download/Sightline-Setup-x64.exe', 'HEAD']);
   assert.equal((await worker.fetch(new Request('https://edge.example/download/unknown'), {}, {})).status, 404);
+});
+
+test('a missing installer sends visitors back to the download section instead of a 404', async () => {
+  globalThis.fetch = async () => new Response('Not Found', { status: 404 });
+  const response = await worker.fetch(new Request('https://edge.example/download/mac'), {}, {});
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get('location'), 'https://edge.example/?download=unavailable#download');
+  assert.equal(response.headers.get('cache-control'), 'no-store');
 });
