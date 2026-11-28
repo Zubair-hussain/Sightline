@@ -19,7 +19,7 @@ If something does not work, a result looks wrong, or you notice anything unusual
 ## 3. What Sightline does, and does not do, on your computer
 
 - **It does not access your other apps.** Sightline does not read, change or control other programs on your computer, their data, your web browser, or your browser's logins, cookies or saved passwords.
-- **Its window is locked down.** The app window runs sandboxed and refuses requests for the camera, microphone, location, notifications, clipboard and similar permissions.
+- **Its window is locked down.** The app window runs sandboxed and refuses requests for the camera, microphone, location, notifications, reading your clipboard and similar permissions. (It may only write to the clipboard when you press one of its own Copy buttons.)
 - **It opens only the websites you ask it to audit**, in its own private built-in browser with no logins or cookies. To run the checks it also contacts DNS servers, public certificate-transparency logs and, if you add a token, the Cloudflare API.
 - **It reads files only when you choose them**: a folder or code repository you ask it to scan for leaked secrets, and the reports and exports you save.
 - **AI apps can use Sightline only if you add it to them yourself** (the MCP server).
@@ -33,8 +33,8 @@ Only audit websites and scan code that you own or are allowed to test. Do not us
 
 ## 5. Windows, macOS and Linux
 
-- **Windows:** the installer may not be code-signed yet, so Windows SmartScreen can show "Windows protected your PC". Only choose More info → Run anyway if you downloaded Sightline from sightaud.com or from the official GitHub releases page.
-- **macOS:** if the app is not notarized yet, macOS can refuse to open it the first time. Right-click the app and choose Open, or go to System Settings → Privacy & Security → Open Anyway.
+- **Windows:** the installer may not be code-signed yet, so Windows SmartScreen can show "Windows protected your PC". Only choose More info, then Run anyway if you downloaded Sightline from sightaud.com or from the official GitHub releases page.
+- **macOS:** if the app is not notarized yet, macOS can refuse to open it the first time. Right-click the app and choose Open, or go to System Settings > Privacy & Security > Open Anyway.
 - **Linux:** make the AppImage executable before running it (chmod +x), or install the .deb or .rpm package with your package manager.
 
 On every system, download Sightline only from sightaud.com or https://github.com/Zubair-hussain/Sightline/releases.
