@@ -21,16 +21,35 @@ const appMeta = [
 await fs.rm(out, { recursive: true, force: true });
 await fs.mkdir(path.join(out, 'dist'), { recursive: true });
 
+// Google Analytics 4 for the web app only (the desktop app has no analytics). The page keeps a strict
+// CSP, so the tag is an external same-origin file and only Google Analytics' own hosts are allowed.
+const GA4_ID = 'G-ZYH5HM0HG6';
+const GA_HOSTS = 'https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com';
+const CONSENT_REGIONS = ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH'];
+const analytics = `// Google Consent Mode defaults (denied in the EEA, UK and Switzerland until consent), then GA4.
+window.dataLayer = window.dataLayer || [];
+function gtag() { dataLayer.push(arguments); }
+gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', wait_for_update: 500, region: ${JSON.stringify(CONSENT_REGIONS)} });
+gtag('consent', 'default', { ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted', analytics_storage: 'granted' });
+gtag('js', new Date());
+gtag('config', '${GA4_ID}');
+`;
+
 const html = (await fs.readFile(path.join(renderer, 'index.html'), 'utf8'))
-  .replace('<head>', '<head>\n  <base href="/app/">')
+  .replace('<head>', `<head>\n  <base href="/app/">\n  <script src="analytics.js"></script>\n  <script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script>`)
   .replace('<title>Sightline</title>', appMeta)
-  .replace("connect-src 'none'", "connect-src 'self'")
-  .replace("img-src 'self' data:", "img-src 'self' data: blob:")
+  .replace("script-src 'self'", `script-src 'self' https://www.googletagmanager.com`)
+  .replace("connect-src 'none'", `connect-src 'self' ${GA_HOSTS}`)
+  .replace("img-src 'self' data:", `img-src 'self' data: blob: ${GA_HOSTS}`)
   .replace('<script type="module" src="dist/app.js"></script>',
     '<script type="module" src="dist/web-bridge.js"></script>\n  <script type="module" src="dist/app.js"></script>');
 if (!html.includes('web-bridge.js')) throw new Error('renderer/index.html changed: could not inject the web bridge');
 if (!html.includes('rel="canonical"')) throw new Error('renderer/index.html changed: could not inject the /app title and canonical');
+if (!html.includes(`connect-src 'self' ${GA_HOSTS}`) || !html.includes("script-src 'self' https://www.googletagmanager.com")) throw new Error('renderer/index.html changed: could not allow Google Analytics in the CSP');
 await fs.writeFile(path.join(out, 'index.html'), html);
+await fs.writeFile(path.join(out, 'analytics.js'), analytics);
+// The web app's What's new tab reads the changelog shipped next to it.
+await fs.copyFile(path.join(root, 'CHANGELOG.md'), path.join(out, 'changelog.md'));
 
 await fs.copyFile(path.join(renderer, 'styles.css'), path.join(out, 'styles.css'));
 for (const f of await fs.readdir(path.join(renderer, 'dist'))) {

@@ -10,6 +10,8 @@ import { startMcpServer } from '../mcp/server';
 import { auditLighthouse } from './audits/lighthouse';
 import { auditCoverage } from './audits/coverage';
 import { testCasesToCsv, testCasesToMarkdown, testCasesToPlaywright } from '../engine/testcases';
+import { termsVersion } from '../engine/version';
+import { checkForUpdates } from './updates';
 
 const isDev = process.argv.includes('--dev');
 const ROOT = path.join(__dirname, '..', '..');
@@ -31,6 +33,7 @@ const DEFAULT_SETTINGS: SL.Settings = {
   language: 'auto', theme: 'system', maxPages: 15, maxLinks: 150, memoryIterations: 8,
   device: 'iphone', modules: ALL_MODULES, cloudflareToken: '', reportTheme: 'brand',
   lighthouseFormFactor: 'mobile', memoryScenario: { mode: 'auto', steps: [], includeAuto: true }, memoryConsent: [],
+  termsAccepted: '', dismissedUpdate: '',
 };
 
 async function readJson<T>(file: string, fallback: T): Promise<T> {
@@ -98,7 +101,8 @@ function createWindow(): void {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      // Sandboxed renderer: no Node.js, no access to other apps or files; only the preload bridge.
+      sandbox: true,
       spellcheck: false,
     },
   });
@@ -107,6 +111,11 @@ function createWindow(): void {
     return { action: 'deny' };
   });
   mainWindow.webContents.on('will-navigate', (e) => e.preventDefault());
+  // Refuse camera, microphone, location, notifications, clipboard reading and every other permission.
+  // Only writing to the clipboard is allowed, for the app's own Copy buttons.
+  const allowed = new Set(['clipboard-sanitized-write']);
+  mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, cb) => cb(allowed.has(permission)));
+  mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission) => allowed.has(permission));
   void mainWindow.loadFile(path.join(ROOT, 'renderer', 'index.html'));
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
 }
@@ -209,6 +218,13 @@ ipcMain.handle('history:delete', async (_e, id: string) => {
   await writeJson(path.join(historyDir(), 'index.json'), index.filter((h) => h.id !== safeId));
 });
 ipcMain.handle('app:open-external', (_e, url: string) => { if (/^https?:\/\//.test(url)) return shell.openExternal(url); });
+ipcMain.handle('app:terms', async () => {
+  const markdown = await fs.readFile(path.join(ROOT, 'TERMS.md'), 'utf8').catch(() => '');
+  return { version: termsVersion(markdown), markdown };
+});
+ipcMain.handle('app:changelog', () => fs.readFile(path.join(ROOT, 'CHANGELOG.md'), 'utf8').catch(() => ''));
+ipcMain.handle('updates:check', (_e, force: boolean) => checkForUpdates(force === true));
+ipcMain.handle('app:quit', () => app.quit());
 function mcpConfig(): string {
   // Packaged: the app binary itself. Development: electron.exe + project folder.
   const args = app.isPackaged ? ['--mcp'] : [ROOT, '--mcp'];
@@ -230,11 +246,21 @@ async function smoke(url: string, outDir: string): Promise<void> {
   const js = (code: string) => w.webContents.executeJavaScript(code);
   await fs.mkdir(outDir, { recursive: true });
   await new Promise((r) => setTimeout(r, 1500));
+  // First launch: the terms of use must be accepted before anything else (accept like a user would).
+  if (await js(`!!document.querySelector('dialog.terms-dialog[open]')`)) {
+    await shot('00-terms');
+    const blocked: boolean = await js(`document.querySelector('dialog.terms-dialog .btn-primary').disabled`);
+    await fs.writeFile(path.join(outDir, 'terms.txt'), `accept button disabled before tick: ${blocked}\n`);
+    await js(`(() => { document.getElementById('terms-agree').click(); document.querySelector('dialog.terms-dialog .btn-primary').click(); })()`);
+    await new Promise((r) => setTimeout(r, 800));
+  }
+  // A "new version" pop-up may follow; close it for the screenshots.
+  await js(`document.querySelector('dialog.update-dialog[open] .btn-secondary')?.click()`);
   await shot('01-home');
   await js(`(() => { const i = document.querySelector('.search input'); i.value = ${JSON.stringify(url)}; document.querySelector('.search').requestSubmit(); })()`);
   await new Promise((r) => setTimeout(r, 1200));
   // Safety dialog for the memory test: capture it, then confirm like a user would.
-  if (await js(`!!document.querySelector('dialog.consent[open]')`)) {
+  if (await js(`!!document.querySelector('dialog.consent:not(.terms-dialog):not(.update-dialog)[open]')`)) {
     await shot('01b-consent');
     const blockedBeforeTick: boolean = await js(`document.querySelector('[data-consent-run]').disabled`);
     await fs.writeFile(path.join(outDir, 'consent.txt'), `run button disabled before tick: ${blockedBeforeTick}\n`);

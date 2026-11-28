@@ -3,6 +3,7 @@ import { HeroForm } from '@/components/HeroForm';
 import { Downloads } from '@/components/Downloads';
 import { McpSnippet } from '@/components/McpSnippet';
 import { SiteHeader, SiteFooter } from '@/components/SiteChrome';
+import { readTerms } from '@/lib/terms';
 import { FEATURES, FAQ, MCP_TOOLS } from '@/lib/content';
 
 const faqJsonLd = {
@@ -99,7 +100,7 @@ export default function Home() {
           <div className="inner">
             <h2 className="display-lg">Download Sightline.</h2>
             <p className="lead muted">Free and open source for Windows, macOS and Linux.</p>
-            <Downloads />
+            <Downloads termsVersion={readTerms().version} />
           </div>
         </section>
 

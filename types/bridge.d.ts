@@ -14,6 +14,25 @@ declare namespace SL {
     memoryScenario: MemoryScenario;
     /** sites the user confirmed they may test with the memory/interaction test */
     memoryConsent: string[];
+    /** Version of TERMS.md the user accepted ('' = not yet). */
+    termsAccepted: string;
+    /** Release the user chose to skip in the update pop-up. */
+    dismissedUpdate: string;
+  }
+
+  interface UpdateInfo {
+    current: string;
+    latest: string | null;
+    available: boolean;
+    /** Release notes (Markdown) of the latest release. */
+    notes: string;
+    releaseUrl?: string;
+    releasesUrl: string;
+    /** Download page for this computer's system. */
+    downloadUrl: string;
+    publishedAt: string | null;
+    checkedAt: string;
+    error?: string;
   }
 
   interface HistoryItem { id: string; url: string; score: number | null; startedAt: string }
@@ -31,6 +50,13 @@ declare namespace SL {
     deleteHistory(id: string): Promise<void>;
     openExternal(url: string): Promise<void>;
     info(): Promise<AppInfo>;
+    /** TERMS.md and its version (desktop app). */
+    terms(): Promise<{ version: string; markdown: string }>;
+    /** CHANGELOG.md shipped with this version. */
+    changelog(): Promise<string>;
+    /** Latest release on GitHub; cached for a day unless force is true. */
+    checkUpdates(force?: boolean): Promise<UpdateInfo>;
+    quit(): Promise<void>;
   }
 
   type TestCaseFormat = 'csv' | 'md' | 'playwright';

@@ -472,3 +472,21 @@ dialog.consent::backdrop { background: rgba(0, 0, 0, 0.45); backdrop-filter: blu
 }
 .tc-row > button[aria-expanded="true"] .chev { transform: rotate(90deg); }
 .tc-list { text-align: start; }
+
+/* ---------- terms, update pop-up and What's new ---------- */
+.terms-box { max-height: min(52vh, 460px); overflow-y: auto; border: 1px solid var(--hairline); border-radius: var(--r-md); padding: 4px 18px; margin: 14px 0 8px; background: var(--card); }
+.terms-box:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.md { text-align: start; font-size: 15px; line-height: 1.55; overflow-wrap: anywhere; }
+.md h2 { font-size: 18px; margin: 20px 0 6px; }
+.md h3 { font-size: 16px; margin: 16px 0 6px; }
+.md h4 { font-size: 15px; margin: 12px 0 4px; }
+.md p, .md ul { margin: 0 0 10px; }
+.md ul { padding-inline-start: 20px; }
+.md li { margin: 4px 0; }
+.md code { font-size: 13px; background: var(--hairline); border-radius: 4px; padding: 1px 5px; }
+.update-card { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 24px; }
+.update-card .md { width: 100%; }
+.changelog, .terms-page { margin-top: 8px; }
+.btn-link { background: none; border: 0; color: var(--primary); cursor: pointer; font-size: 14px; padding: 8px 4px; margin-inline-end: auto; }
+.link-button { background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; text-decoration: underline; }
+dialog.update-dialog .consent-actions, dialog.terms-dialog .consent-actions { flex-wrap: wrap; }
