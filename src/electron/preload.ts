@@ -17,6 +17,10 @@ const bridge: SL.Bridge = {
   deleteHistory: (id) => ipcRenderer.invoke('history:delete', id),
   openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
   info: () => ipcRenderer.invoke('app:info'),
+  terms: () => ipcRenderer.invoke('app:terms'),
+  changelog: () => ipcRenderer.invoke('app:changelog'),
+  checkUpdates: (force) => ipcRenderer.invoke('updates:check', force === true),
+  quit: () => ipcRenderer.invoke('app:quit'),
 };
 
 contextBridge.exposeInMainWorld('sightline', bridge);
