@@ -1,7 +1,7 @@
 {
   "name": "sightline",
   "productName": "Sightline",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Free open-source website audit tool: SEO audit, Lighthouse-style scores, Core Web Vitals, accessibility (axe-core), broken link checker, hreflang validator, code coverage, memory leak detector, iPhone/iOS Safari mobile test and Cloudflare audit — desktop app, web app, CLI and MCP server.",
   "main": "out/electron/main.js",
   "bin": {
@@ -90,7 +90,9 @@
       "renderer/dist/**",
       "!renderer/dist/web-bridge.js",
       "!renderer/dist/**/*.map",
-      "package.json"
+      "package.json",
+      "TERMS.md",
+      "CHANGELOG.md"
     ],
     "win": {
       "target": [
@@ -113,7 +115,8 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "perMachine": false
+      "perMachine": false,
+      "license": "build/license_en.txt"
     },
     "mac": {
       "target": [
@@ -150,6 +153,11 @@
     },
     "portable": {
       "artifactName": "Sightline-Portable-${arch}.${ext}"
+    },
+    "rpm": {
+      "fpm": [
+        "--rpm-rpmbuild-define=_build_id_links none"
+      ]
     }
   },
   "author": "Zubair Hussain (https://github.com/Zubair-hussain)",
