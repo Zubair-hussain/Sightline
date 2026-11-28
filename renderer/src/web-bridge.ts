@@ -4,6 +4,7 @@ const ALL: SL.CategoryKey[] = ['seo', 'hreflang', 'links', 'website', 'performan
 const DEFAULTS: SL.Settings = {
   language: 'auto', theme: 'system', maxPages: 8, maxLinks: 80, memoryIterations: 8, device: 'iphone', modules: ALL, cloudflareToken: '', reportTheme: 'brand',
   lighthouseFormFactor: 'mobile', memoryScenario: { mode: 'auto', steps: [], includeAuto: true }, memoryConsent: [],
+  termsAccepted: '', dismissedUpdate: '',
 };
 
 const store = {
@@ -130,6 +131,15 @@ const bridge: SL.Bridge = {
     store.set('sl.history', store.get<SL.HistoryItem[]>('sl.history', []).filter((h) => h.id !== id));
   },
   async openExternal(url) { window.open(url, '_blank', 'noopener'); },
+  // The website shows the terms at /terms before download; the web app itself has no terms gate.
+  async terms() { return { version: '', markdown: '' }; },
+  // CHANGELOG.md is copied next to the web app at build time.
+  async changelog() { return fetch('changelog.md').then((r) => (r.ok ? r.text() : '')).catch(() => ''); },
+  // The web app is always the latest version.
+  async checkUpdates() {
+    return { current: '', latest: null, available: false, notes: '', releasesUrl: 'https://github.com/Zubair-hussain/Sightline/releases', downloadUrl: '/#download', publishedAt: null, checkedAt: new Date().toISOString() };
+  },
+  async quit() { /* nothing to quit in a browser tab */ },
   async info() {
     const cfg = await fetch('/api/config').then((r) => r.json()).catch(() => ({ version: '1.0.0' }));
     return { version: cfg.version, platform: 'web', electron: '', chrome: '', locale: navigator.language, web: true, downloadUrl: '/#download' };
