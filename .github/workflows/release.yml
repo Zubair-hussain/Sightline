@@ -30,7 +30,13 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - name: Build installers
-        run: npm run dist -- --publish never
+        shell: bash
+        # Without signing secrets the variables arrive as empty strings, and electron-builder reads an
+        # empty CSC_LINK as a path ("…/Sightline not a file"). Drop them so it builds unsigned instead.
+        run: |
+          if [ -z "$CSC_LINK" ]; then unset CSC_LINK CSC_KEY_PASSWORD; export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
+          if [ -z "$APPLE_ID" ]; then unset APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID; fi
+          npm run dist -- --publish never
         env:
           # Code signing (optional but recommended — see README "Signing"):
           CSC_LINK: ${{ secrets.CSC_LINK }}
