@@ -68,3 +68,16 @@ html { scroll-behavior: smooth; }
   .post-link > img { min-height: 0; aspect-ratio: 16 / 9; }
   .prose { font-size: 17px; }
 }
+
+/* ---------- terms ---------- */
+.legal-page .inner { text-align: start; }
+.legal-page .prose h2 { font-size: 22px; margin: 32px 0 10px; }
+.terms-gate { border: 0; border-radius: var(--r-lg); padding: 28px; max-width: 620px; width: calc(100vw - 32px); color: var(--ink); background: var(--card, #fff); text-align: start; }
+.terms-gate::backdrop { background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(4px); }
+.terms-gate h2 { margin: 0 0 12px; }
+.gate-points { padding-inline-start: 20px; margin: 0 0 16px; }
+.gate-points li { margin: 8px 0; }
+.gate-check { display: flex; gap: 10px; align-items: flex-start; margin: 8px 0 18px; font-weight: 600; }
+.gate-check input { margin-top: 4px; }
+.gate-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+.gate-actions .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
